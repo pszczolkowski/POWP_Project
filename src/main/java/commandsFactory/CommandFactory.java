@@ -18,14 +18,34 @@ public class CommandFactory {
 	
 	private Map< String , Map< String , IPlotterCommand > > commands = new HashMap<>();
 
+	/**
+	 * Podczas tworzenia obiektu zostają wczytane zapisane w pliku polecenia
+	 */
 	public CommandFactory() {
 		read();
 	}
 	
+	/**
+	 * Dodaje polecenie o podanej nazwie. Może istnieć tylko jedno polecenie o podanej nazwie
+	 * (be rozróżniania wielkości liter). 
+	 * @param name nazwa polecenia
+	 * @param command polecenie do dodania
+	 * @throws CommandAlreadyExistsException jeżeli polecenie o podanej nazwie już istnieje
+	 * @throws IllegalArgumentException jeżeli podana nazwa lub polecenie są null
+	 */
 	public void add( String name , IPlotterCommand command ){
 		add( name , command, DEFAULT_CATEGORY );
 	}
 	
+	/**
+	 * Dodaje polecenie o podanej nazwie. Może istnieć tylko jedno polecenie o podanej nazwie
+	 * (be rozróżniania wielkości liter). 
+	 * @param name nazwa polecenia
+	 * @param command polecenie do dodania
+	 * @param category nazwa kategorii
+	 * @throws CommandAlreadyExistsException jeżeli polecenie o podanej nazwie już istnieje
+	 * @throws IllegalArgumentException jeżeli podana nazwa, polecenie lub nazwa kategorii są null
+	 */
 	public void add( String name , IPlotterCommand command , String category ){
 		if ( name == null )
 			throw new IllegalArgumentException( "command name cannot be null" );
@@ -49,6 +69,12 @@ public class CommandFactory {
 		save();
 	}
 	
+	/**
+	 * Pobiera polecenie o podanej nazwie. Jeżeli polecenie o takiej nazwie nie istnieje,
+	 * zwraca null.
+	 * @param name nazwa polecenia
+	 * @return polecenie o podanej nazwie lub null, jeżeli nie ma takiego polecenia
+	 */
 	public IPlotterCommand get( String name ){
 		for (Map< String , IPlotterCommand > categoryCommands : commands.values()) {
 			for (String existingName : categoryCommands.keySet()) {
@@ -61,6 +87,11 @@ public class CommandFactory {
 		return null;
 	}
 	
+	/**
+	 * Usuwa polecenie o podanej nazwie
+	 * @param name nazwa polecenia
+	 * @return true jeżeli polecenie zostało usunięte, false jeżeli nie istniało
+	 */
 	public boolean remove( String name ){
 		for (Map< String , IPlotterCommand > categoryCommands : commands.values()) {
 			if( categoryCommands.remove( name ) != null ){
@@ -71,6 +102,11 @@ public class CommandFactory {
 		return false;
 	}
 	
+	/**
+	 * Sprawdza czy istnieje polecenie o podanej nazwie
+	 * @param name nazwa polecenia
+	 * @return true jeżeli polecenie o podanej nazwie istnieje, false jeżeli nie istnieje
+	 */
 	public boolean contains( String name ){
 		for (Map< String , IPlotterCommand > categoryCommands : commands.values()) {
 			if( categoryCommands.containsKey( name ) ){
@@ -81,6 +117,11 @@ public class CommandFactory {
 		return false;
 	}
 	
+	/**
+	 * Pobiera listę poleceń o podanej kategorii
+	 * @param category nazwa kategorii
+	 * @return lista poleceń z danej kategorii. Jeżeli kategoria nie istnieje, lista jest pusta
+	 */
 	public List< IPlotterCommand > getCommandsOf( String category ){
 		return new ArrayList< IPlotterCommand >( commands.get( category ).values() );
 	}

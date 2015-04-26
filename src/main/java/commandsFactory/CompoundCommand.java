@@ -13,10 +13,18 @@ public class CompoundCommand implements ICompoundCommand {
 
 	private List< IPlotterCommand > commands;
 	
+	/**
+	 * Tworzy złożone polecenie, składające się z podanej listy poleceń
+	 * @param commands ista poleceń
+	 */
 	public CompoundCommand( List<IPlotterCommand> commands ) {
 		this.commands = commands;
 	}
 	
+	/**
+	 * Tworzy złożone polecenie, składające się z podanej tablicy poleceń
+	 * @param commands tablica poleceń
+	 */
 	public CompoundCommand( IPlotterCommand... commands ) {
 		this.commands = new ArrayList< IPlotterCommand >( Arrays.asList( commands ));
 	}
