@@ -71,6 +71,16 @@ public class CommandFactory {
 		return false;
 	}
 	
+	public boolean contains( String name ){
+		for (Map< String , IPlotterCommand > categoryCommands : commands.values()) {
+			if( categoryCommands.containsKey( name ) ){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public List< IPlotterCommand > getCommandsOf( String category ){
 		return new ArrayList< IPlotterCommand >( commands.get( category ).values() );
 	}
