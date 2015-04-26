@@ -61,6 +61,16 @@ public class CommandFactory {
 		return null;
 	}
 	
+	public boolean remove( String name ){
+		for (Map< String , IPlotterCommand > categoryCommands : commands.values()) {
+			if( categoryCommands.remove( name ) != null ){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public List< IPlotterCommand > getCommandsOf( String category ){
 		return new ArrayList< IPlotterCommand >( commands.get( category ).values() );
 	}
