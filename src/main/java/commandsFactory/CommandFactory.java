@@ -1,5 +1,10 @@
 package commandsFactory;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +18,10 @@ public class CommandFactory {
 	
 	private Map< String , Map< String , IPlotterCommand > > commands = new HashMap<>();
 
+	public CommandFactory() {
+		read();
+	}
+	
 	public void add( String name , IPlotterCommand command ){
 		add( name , command, DEFAULT_CATEGORY );
 	}
@@ -36,6 +45,8 @@ public class CommandFactory {
 		}
 		
 		categoryCommands.put( name , command );
+		
+		save();
 	}
 	
 	public IPlotterCommand get( String name ){
@@ -52,6 +63,24 @@ public class CommandFactory {
 	
 	public List< IPlotterCommand > getCommandsOf( String category ){
 		return new ArrayList< IPlotterCommand >( commands.get( category ).values() );
+	}
+	
+	
+	private void save(){
+		try( ObjectOutputStream out = new ObjectOutputStream( new FileOutputStream( "commands" ) ) ) {
+			out.writeObject( commands );
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void read(){
+		try( ObjectInputStream in = new ObjectInputStream( new FileInputStream( "commands" ) ) ) {
+			commands = (Map<String, Map<String, IPlotterCommand>>) in.readObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {}
 	}
 	
 }
