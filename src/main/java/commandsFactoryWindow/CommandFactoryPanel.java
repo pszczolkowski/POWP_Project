@@ -5,33 +5,24 @@
  */
 package commandsFactoryWindow;
 
-import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Integer.MIN_VALUE;
-
+import commandsFactory.CommandAlreadyExistsException;
+import commandsFactory.CommandBuilder;
+import commandsFactory.CommandFactory;
+import edu.iis.powp.command.IPlotterCommand;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
+import java.util.Map;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import commandsFactory.CommandAlreadyExistsException;
-import commandsFactory.CommandBuilder;
-import commandsFactory.CommandFactory;
-
-import edu.iis.powp.command.IPlotterCommand;
+import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Integer.MIN_VALUE;
 
 /**
  *
@@ -55,27 +46,34 @@ public class CommandFactoryPanel extends JPanel {
     private final JButton resetButton;
     private final JTextField commandName;
     private final JTextField commandCategory;
-    
-    private List< OnCommandAddedListener > listeners = new ArrayList<>();
 
-    public void addOnCommandAddedListener( OnCommandAddedListener listener ){
-    	listeners.add( listener );
+    private Map< String, IPlotterCommand> commandMap;
+
+    private List< OnCommandAddedListener> listeners = new ArrayList<>();
+
+    public void addOnCommandAddedListener( OnCommandAddedListener listener ) {
+        listeners.add( listener );
     }
-    private void commandAdded( String name , IPlotterCommand command ){
-    	for( OnCommandAddedListener listener : listeners )
-    		listener.onCommandAdded(name, command);
+
+    private void commandAdded( String name, IPlotterCommand command ) {
+        for ( OnCommandAddedListener listener : listeners ) {
+            listener.onCommandAdded( name, command );
+        }
     }
-    
+
     public CommandFactoryPanel() {
         setBackground( Color.white );
         setLayout( new GridLayout( 3, 1 ) );
 
-        JPanel newCommandPanel = new JPanel( new GridLayout( 3, 3 ) );
+        commandMap = factory.getAllWithNames();
+
+        JPanel newCommandPanel = new JPanel( new GridLayout( 2, 4 ) );
         xPosition = new JSpinner( new SpinnerNumberModel( 0, MIN_VALUE, MAX_VALUE, 1 ) );
         yPosition = new JSpinner( new SpinnerNumberModel( 0, MIN_VALUE, MAX_VALUE, 1 ) );
         commandType = new JComboBox();
         commandType.addItem( "Set Position" );
         commandType.addItem( "Draw Line" );
+        addAllCommands();
         commandType.setEditable( false );
         addCommandButton = new JButton( "Add command" );
         addCommandButton.addActionListener( new ActionListener() {
@@ -85,28 +83,39 @@ public class CommandFactoryPanel extends JPanel {
                 String selectedCommand = commandType.getSelectedItem().toString();
                 int x = (int) xPosition.getValue();
                 int y = (int) yPosition.getValue();
-                tableModel.addRow( new Object[]{ selectedCommand, x, y } );
                 if ( selectedCommand.equals( "Set Position" ) ) {
+                    tableModel.addRow( new Object[]{ selectedCommand, x, y } );
                     builder.setPosition( x, y );
-                } else {
+                } else if ( selectedCommand.equals( "Draw Line" ) ) {
+                    tableModel.addRow( new Object[]{ selectedCommand, x, y } );
                     builder.drawLineTo( x, y );
+                } else {
+                    for ( String name : commandMap.keySet() ) {
+                        if ( selectedCommand.equals( name ) ) {
+                            tableModel.addRow( new Object[]{ selectedCommand, null, null } );
+                            builder.addCommand( commandMap.get( name ) );
+                            break;
+                        }
+                    }
                 }
+                clearInputs();
             }
         } );
-        newCommandPanel.add( new JLabel( "Command type" ) );
-        newCommandPanel.add( new JLabel( "X" ) );
-        newCommandPanel.add( new JLabel( "Y" ) );
+        newCommandPanel.add( new JLabel( "Command type", SwingConstants.CENTER ) );
+        newCommandPanel.add( new JLabel( "X", SwingConstants.CENTER ) );
+        newCommandPanel.add( new JLabel( "Y", SwingConstants.CENTER ) );
+        newCommandPanel.add( new JPanel() );
         newCommandPanel.add( commandType );
         newCommandPanel.add( xPosition );
         newCommandPanel.add( yPosition );
-        newCommandPanel.add( new JPanel() );
+//        newCommandPanel.add( new JPanel() );
         newCommandPanel.add( addCommandButton );
-        newCommandPanel.add( new JPanel() );
+        //newCommandPanel.add( new JPanel() );
 
         JPanel inputPanel = new JPanel( new GridLayout( 2, 2 ) );
-        JLabel nameLabel = new JLabel( "Command Name" );
+        JLabel nameLabel = new JLabel( "Command Name", SwingConstants.CENTER );
         commandName = new JTextField();
-        JLabel categoryLabel = new JLabel( "Command Category" );
+        JLabel categoryLabel = new JLabel( "Command Category", SwingConstants.CENTER );
         commandCategory = new JTextField();
         inputPanel.add( nameLabel );
         inputPanel.add( commandName );
@@ -123,9 +132,11 @@ public class CommandFactoryPanel extends JPanel {
                 String category = commandCategory.getText();
                 if ( !( name.equals( "" ) || category.equals( "" ) ) ) {
                     try {
-                    	IPlotterCommand command =builder.build(); 
+                        IPlotterCommand command = builder.build();
                         factory.add( name, command, category );
-                        commandAdded(name, command);
+                        commandAdded( name, command );
+                        commandMap = factory.getAllWithNames();
+                        commandType.addItem( name );
                     } catch ( CommandAlreadyExistsException error ) {
                         JOptionPane.showMessageDialog( null, "Command Already Exists" );
                     }
@@ -152,13 +163,17 @@ public class CommandFactoryPanel extends JPanel {
         menuPanel.add( inputPanel );
         menuPanel.add( buttonPanel );
 
-        JPanel commandTablePanel = new JPanel();
+        JPanel commandTablePanel = new JPanel( new GridLayout( 1, 1 ) );
         tableModel = new DefaultTableModel( header, 0 );
         tableModel.addRow( header );
         commandsTable = new JTable( tableModel );
-        
         commandTablePanel.add( commandsTable );
         JScrollPane scrollPanel = new JScrollPane( commandTablePanel );
+        scrollPanel.getVerticalScrollBar().addAdjustmentListener( new AdjustmentListener() {
+            public void adjustmentValueChanged( AdjustmentEvent e ) {
+                e.getAdjustable().setValue( e.getAdjustable().getMaximum() );
+            }
+        } );
 
         add( newCommandPanel );
         add( menuPanel );
@@ -167,16 +182,26 @@ public class CommandFactoryPanel extends JPanel {
     }
 
     private void clearInputsAndTable() {
+        clearInputs();
+        tableModel.setRowCount( 0 );
+        tableModel.addRow( header );
+    }
+
+    private void clearInputs() {
         commandCategory.setText( "" );
         commandName.setText( "" );
         xPosition.setValue( 0 );
         yPosition.setValue( 0 );
-        tableModel.setRowCount( 0 );
-        tableModel.addRow( header );
-
     }
-    
-    public interface OnCommandAddedListener{
-    	void onCommandAdded( String name , IPlotterCommand command );
+
+    public interface OnCommandAddedListener {
+
+        void onCommandAdded( String name, IPlotterCommand command );
+    }
+
+    private void addAllCommands() {
+        for ( String name : commandMap.keySet() ) {
+            commandType.addItem( name );
+        }
     }
 }
