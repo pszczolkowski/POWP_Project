@@ -9,7 +9,7 @@ import edu.iis.client.plottermagic.IPlotter;
 import edu.iis.powp.command.ICompoundCommand;
 import edu.iis.powp.command.IPlotterCommand;
 
-public class CompoundCommand implements ICompoundCommand {
+public class CompoundCommand implements ICompoundCommand , Cloneable {
 
 	private List< IPlotterCommand > commands;
 	
@@ -39,6 +39,14 @@ public class CompoundCommand implements ICompoundCommand {
 	@Override
 	public Iterator<IPlotterCommand> iterator() {
 		return commands.iterator();
+	}
+
+	@Override
+	protected CompoundCommand clone() throws CloneNotSupportedException {
+		CompoundCommand result = (CompoundCommand) super.clone();
+		result.commands = new ArrayList< IPlotterCommand >( commands );
+		
+		return result;
 	}
 
 }
