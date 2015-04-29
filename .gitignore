@@ -12,6 +12,7 @@
 hs_err_pid*
 
 doc/
+doc_commandFactory/
 .svn/
 /target/
 .classpath
