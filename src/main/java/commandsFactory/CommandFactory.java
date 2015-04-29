@@ -13,6 +13,13 @@ import java.util.Map;
 
 import edu.iis.powp.command.IPlotterCommand;
 
+/**
+ * Służy do przechowywania utworzonych poleceń. Każde polecenie posiada
+ * przypisaną nazwę i kategorię. Dodając nowe polecenia podaje się ich
+ * nazwę oraz kategorię. Aby pobrać dane polecenie, należy podać jego nazwę.
+ * Można także pobrać całą listę poleceń danej kategorii, poprzez podanie
+ * jej nazwy.
+ */
 public class CommandFactory {
 	
 	private static final String DEFAULT_CATEGORY = "general";
@@ -28,7 +35,7 @@ public class CommandFactory {
 	
 	/**
 	 * Dodaje polecenie o podanej nazwie. Może istnieć tylko jedno polecenie o podanej nazwie
-	 * (be rozróżniania wielkości liter). 
+	 * (be rozróżniania wielkości liter). Ustawia kategorię polecenia na "general"
 	 * @param name nazwa polecenia
 	 * @param command polecenie do dodania
 	 * @throws CommandAlreadyExistsException jeżeli polecenie o podanej nazwie już istnieje
