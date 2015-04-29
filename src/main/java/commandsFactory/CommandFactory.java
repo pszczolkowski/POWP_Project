@@ -110,6 +110,20 @@ public class CommandFactory {
 	}
 	
 	/**
+	 * Pobiera mapę wszystkich poleceń wraz z ich nazwami
+	 * @return mapa wszystkich poleceń wraz z nazwami
+	 */
+	public Map< String , IPlotterCommand > getAllWithNames(){
+		Map< String , IPlotterCommand > allCommands = new HashMap<>();
+		
+		for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
+				allCommands.putAll( categoryCommands );
+		}
+		
+		return allCommands;
+	}
+	
+	/**
 	 * Usuwa polecenie o podanej nazwie
 	 * @param name nazwa polecenia
 	 * @return true jeżeli polecenie zostało usunięte, false jeżeli nie istniało
