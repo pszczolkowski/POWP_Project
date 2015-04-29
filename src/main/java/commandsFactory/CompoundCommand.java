@@ -11,6 +11,8 @@ import edu.iis.powp.command.IPlotterCommand;
 
 public class CompoundCommand implements ICompoundCommand , Cloneable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private List< IPlotterCommand > commands;
 	
 	/**
