@@ -17,3 +17,6 @@ doc/
 .classpath
 .project
 .settings/
+
+#plik zawierający zapisane na dysku polecenia
+commands
