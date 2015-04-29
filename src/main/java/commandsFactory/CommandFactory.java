@@ -1,6 +1,7 @@
 package commandsFactory;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -139,7 +140,10 @@ public class CommandFactory {
 	private void read(){
 		try( ObjectInputStream in = new ObjectInputStream( new FileInputStream( "commands" ) ) ) {
 			commands = (Map<String, Map<String, IPlotterCommand>>) in.readObject();
-		} catch (IOException e) {
+		} catch ( FileNotFoundException e ) {
+			// ignore 
+		} 
+		catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {}
 	}
