@@ -5,18 +5,33 @@
  */
 package commandsFactoryWindow;
 
-import commandsFactory.CommandAlreadyExistsException;
-import commandsFactory.CommandBuilder;
-import commandsFactory.CommandFactory;
+import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Integer.MIN_VALUE;
+
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
-import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Integer.MIN_VALUE;
+import commandsFactory.CommandAlreadyExistsException;
+import commandsFactory.CommandBuilder;
+import commandsFactory.CommandFactory;
+
+import edu.iis.powp.command.IPlotterCommand;
 
 /**
  *
@@ -40,7 +55,17 @@ public class CommandFactoryPanel extends JPanel {
     private final JButton resetButton;
     private final JTextField commandName;
     private final JTextField commandCategory;
+    
+    private List< OnCommandAddedListener > listeners = new ArrayList<>();
 
+    public void addOnCommandAddedListener( OnCommandAddedListener listener ){
+    	listeners.add( listener );
+    }
+    private void commandAdded( String name , IPlotterCommand command ){
+    	for( OnCommandAddedListener listener : listeners )
+    		listener.onCommandAdded(name, command);
+    }
+    
     public CommandFactoryPanel() {
         setBackground( Color.white );
         setLayout( new GridLayout( 3, 1 ) );
@@ -98,7 +123,9 @@ public class CommandFactoryPanel extends JPanel {
                 String category = commandCategory.getText();
                 if ( !( name.equals( "" ) || category.equals( "" ) ) ) {
                     try {
-                        factory.add( name, builder.build(), category );
+                    	IPlotterCommand command =builder.build(); 
+                        factory.add( name, command, category );
+                        commandAdded(name, command);
                     } catch ( CommandAlreadyExistsException error ) {
                         JOptionPane.showMessageDialog( null, "Command Already Exists" );
                     }
@@ -147,5 +174,9 @@ public class CommandFactoryPanel extends JPanel {
         tableModel.setRowCount( 0 );
         tableModel.addRow( header );
 
+    }
+    
+    public interface OnCommandAddedListener{
+    	void onCommandAdded( String name , IPlotterCommand command );
     }
 }

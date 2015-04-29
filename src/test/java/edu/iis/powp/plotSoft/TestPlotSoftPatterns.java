@@ -1,6 +1,8 @@
 package edu.iis.powp.plotSoft;
 
 import commandsFactory.CommandFactory;
+import commandsFactoryWindow.CommandFactoryPanel;
+import commandsFactoryWindow.CommandFactoryWindow;
 import edu.iis.client.plottermagic.IPlotter;
 import edu.iis.client.plottermagic.preset.FiguresJoe;
 import edu.iis.powp.adapter.LineAdapterPlotterDriver;
@@ -13,6 +15,7 @@ import edu.iis.powp.command.IPlotterCommand;
 import edu.iis.powp.command.SetPositionCommand;
 import edu.iis.powp.gui.event.predefine.SelectTestFigureOptionListener;
 import edu.kis.powp.drawer.shape.line.BasicLine;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -29,9 +32,16 @@ public class TestPlotSoftPatterns {
     public static void main( String[] args ) {
         ApplicationWithDrawer.configureApplication();
 
-        Context context = Application.getComponent( Context.class );
+        final Context context = Application.getComponent( Context.class );
 
         setupCommandFactoryWindow( context );
+        CommandFactoryWindow.getPanel().addOnCommandAddedListener( new CommandFactoryPanel.OnCommandAddedListener() {
+			
+			@Override
+			public void onCommandAdded(String name, IPlotterCommand command) {
+				setupTest( context , name , command );				
+			}
+		});
 
         setupDrivers( context );
 

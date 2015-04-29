@@ -40,5 +40,15 @@ public class CommandFactoryWindow extends JFrame {
         return window;
 
     }
+    
+    public static synchronized CommandFactoryPanel getPanel(){
+    	if ( panel == null ) {
+    		 window = new CommandFactoryWindow();
+	        panel = new CommandFactoryPanel();
+	        window.add( panel );
+	    }
+    	
+    	return panel;
+    }
 
 }
