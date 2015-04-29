@@ -103,7 +103,7 @@ public class CommandFactory {
 		List< IPlotterCommand > allCommands = new ArrayList<>();
 		
 		for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
-			allCommands.addAll( categoryCommands.values() );
+			allCommands.addAll( new ArrayList< IPlotterCommand >( categoryCommands.values() ) );
 		}
 		
 		return allCommands;
@@ -117,7 +117,7 @@ public class CommandFactory {
 		Map< String , IPlotterCommand > allCommands = new HashMap<>();
 		
 		for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
-				allCommands.putAll( categoryCommands );
+				allCommands.putAll( new HashMap< String , IPlotterCommand >( categoryCommands ) );
 		}
 		
 		return allCommands;
