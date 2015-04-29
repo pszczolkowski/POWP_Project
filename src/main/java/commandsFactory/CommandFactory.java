@@ -96,6 +96,20 @@ public class CommandFactory {
 	}
 	
 	/**
+	 * Pobiera listę wszystkich przechowywanych poleceń.
+	 * @return lista przechowywanych poleceń
+	 */
+	public List< IPlotterCommand > getAll(){
+		List< IPlotterCommand > allCommands = new ArrayList<>();
+		
+		for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
+			allCommands.addAll( categoryCommands.values() );
+		}
+		
+		return allCommands;
+	}
+	
+	/**
 	 * Usuwa polecenie o podanej nazwie
 	 * @param name nazwa polecenia
 	 * @return true jeżeli polecenie zostało usunięte, false jeżeli nie istniało
