@@ -1,5 +1,6 @@
 package edu.iis.powp.plotSoft;
 
+import commandsFactory.CommandFactory;
 import edu.iis.client.plottermagic.IPlotter;
 import edu.iis.client.plottermagic.preset.FiguresJoe;
 import edu.iis.powp.adapter.LineAdapterPlotterDriver;
@@ -16,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static commandsFactoryWindow.CommandFactoryWindowSetup.setupCommandFactoryWindow;
 
@@ -36,6 +38,8 @@ public class TestPlotSoftPatterns {
         setupPresetTests( context );
 
         setupSecretCommandTest( context );
+        
+        loadAllTests( context );
     }
 
     /**
@@ -68,6 +72,26 @@ public class TestPlotSoftPatterns {
             @Override
             public void actionPerformed( ActionEvent e ) {
                 FiguresJoe.figureScript2( Application.getComponent( DriverManager.class ).getCurrentPlotter() );
+            }
+        } );
+    }
+
+    private static void loadAllTests( Context context ) {
+        CommandFactory commandFactory = new CommandFactory();
+        Map< String, IPlotterCommand> mapa = commandFactory.getAllWithNames();
+
+        for ( String name : mapa.keySet() ) {
+            setupTest( context, name, mapa.get( name ) );
+        }
+
+    }
+
+    private static void setupTest( Context context, String name, final IPlotterCommand command ) {
+        context.addTest( name, new ActionListener() {
+
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                command.execute( Application.getComponent( DriverManager.class ).getCurrentPlotter() );
             }
         } );
     }
