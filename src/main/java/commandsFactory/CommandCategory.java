@@ -18,8 +18,18 @@ public class CommandCategory {
 	}
 
 	IPlotterCommand findCommand( String name ){
-		// TODO
-		return null;
+		IPlotterCommand foundCommand = commands.get( name );
+		
+		if( foundCommand == null ){
+			for( CommandCategory category : subcategories ){
+				foundCommand = category.findCommand( name );
+				
+				if( foundCommand != null )
+					break;
+			}
+		}
+		
+		return foundCommand;
 	}
 	
 	List< IPlotterCommand > getCommands(){
