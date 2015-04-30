@@ -1,6 +1,9 @@
 package commandsFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import edu.iis.powp.command.IPlotterCommand;
@@ -8,9 +11,13 @@ import edu.iis.powp.command.IPlotterCommand;
 public class CommandCategory {
 
 	private String name;
+	private Map< String , IPlotterCommand > commands;
+	private List< CommandCategory > subcategories;
 	
 	CommandCategory(String name) {
 		this.name = name;
+		this.commands = new HashMap<>();
+		this.subcategories = new ArrayList<>();
 	}
 	
 	public String getName(){
