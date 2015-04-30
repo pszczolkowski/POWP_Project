@@ -32,17 +32,16 @@ public class CommandStore {
 		return instance; 
 	}
 	
-	public void add( IPlotterCommand command ){
-		// TODO
-		// dodaje do domuślnej kategori general
-		// rzuca wyjątek, jak polecenie o podanej nazwie istnieje
-		// sprawdzanie czy podano nulla
+	public void add( String name , IPlotterCommand command ){
+		add( name , command , defaultCategory );
 	}
 	
-	public void add( IPlotterCommand command , CommandCategory category ){
-		// TODO
-		// uwagi jak wyżej
-		// kategoria nie może być nullem
+	public void add( String name , IPlotterCommand command , CommandCategory category ){
+		if( command == null )
+			throw new IllegalArgumentException( "command cannot be null" );
+		
+		if( category.addCommand( name , command ) )
+			throw new CommandAlreadyExistsException( "command " + name + " already exists" );
 	}
 	
 	public IPlotterCommand get( String commandName ){
