@@ -77,9 +77,12 @@ public class CommandCategory {
 	}
 	
 	boolean addSubcategory( CommandCategory category ){
-		// TODO
-		// ma sprawdzać czy dana kategoria tam już czasem nie istnieje
-		return false;
+		if( subcategories.contains( category ) )
+			return false;
+		
+		subcategories.add( category );
+		
+		return true;
 	}
 
 	@Override
