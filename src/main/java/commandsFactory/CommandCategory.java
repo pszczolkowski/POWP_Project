@@ -17,17 +17,17 @@ public class CommandCategory {
 		return name;
 	}
 
-	public IPlotterCommand findCommand( String name ){
+	IPlotterCommand findCommand( String name ){
 		// TODO
 		return null;
 	}
 	
-	public List< IPlotterCommand > getCommands(){
+	List< IPlotterCommand > getCommands(){
 		// TODO
 		return null;
 	}
 	
-	public List< String > getCommandNames(){
+	List< String > getCommandNames(){
 		// TODO
 		return null;
 	}
