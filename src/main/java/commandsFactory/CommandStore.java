@@ -54,6 +54,16 @@ public class CommandStore {
 		
 		return foundCommand;
 	}
+	
+	public CommandCategory addCategory(String categoryName, CommandCategory parent) {
+		if( findCategory( categoryName ) != null )
+			throw new CategoryAlreadyExistsException( "category " + categoryName + " already exists" );
+		
+		CommandCategory createdCategory = new CommandCategory( categoryName );
+		if( parent != null )
+			parent.addSubcategory( createdCategory );
+		
+		return createdCategory;
 	}
 	
 	public List< CommandCategory > getRootCategories(){
