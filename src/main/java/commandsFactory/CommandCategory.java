@@ -50,8 +50,16 @@ public class CommandCategory {
 	}
 	
 	public CommandCategory findSubcategory( String name ){
-		// TODO
-		return null;
+		CommandCategory foundSubcategory = null;
+		
+		for( CommandCategory category : subcategories ){
+			foundSubcategory = category.findSubcategory( name );
+			
+			if( foundSubcategory != null )
+				break;
+		}
+		
+		return foundSubcategory;
 	}
 	
 	public List< CommandCategory > getSubcategories(){
