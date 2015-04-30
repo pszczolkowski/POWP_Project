@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import edu.iis.client.plottermagic.IPlotter;
 import edu.iis.powp.command.ICompoundCommand;
@@ -50,5 +51,24 @@ public class CompoundCommand implements ICompoundCommand , Cloneable {
 		
 		return result;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( commands );
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		
+		if( obj instanceof CompoundCommand ){
+			CompoundCommand other = (CompoundCommand) obj;
+			return commands.equals( other.commands );
+		}else
+			return false;
+	}
+	
+	
 
 }
