@@ -69,6 +69,10 @@ public class CommandStore {
 	public List< CommandCategory > getRootCategories(){
 		return rootCategory.getSubcategories();
 	}
+	
+	public CommandCategory findCategory( String name ){
+		return rootCategory.findSubcategory( name );
 	}
+	
 
 }
