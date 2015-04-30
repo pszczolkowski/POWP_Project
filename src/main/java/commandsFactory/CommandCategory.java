@@ -9,7 +9,7 @@ public class CommandCategory {
 
 	private String name;
 	
-	public CommandCategory(String name) {
+	CommandCategory(String name) {
 		this.name = name;
 	}
 	
@@ -42,7 +42,7 @@ public class CommandCategory {
 		return null;
 	}
 	
-	boolean addCommand( IPlotterCommand command ){
+	boolean addCommand( String name , IPlotterCommand command ){
 		// TODO
 		// tutaj następuje sprawdzanie, czy dana komenda istnieje
 		// i zwrócone zostanie true / false
