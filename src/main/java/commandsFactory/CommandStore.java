@@ -9,7 +9,7 @@ public class CommandStore {
 	private static final String ROOT_CATEGORY_NAME = "all";
 	private static final String DEFAULT_CATEGORY_NAME = "general";
 	
-	private CommandStore instance = null;
+	private static CommandStore instance = null;
 	private CommandCategory defaultCategory;
 	private CommandCategory rootCategory;
 	
@@ -25,7 +25,7 @@ public class CommandStore {
 			defaultCategory = addCategory( DEFAULT_CATEGORY_NAME , null );
 	}
 
-	public CommandStore getInstance(){
+	public static CommandStore getInstance(){
 		if( instance == null )
 			instance = new CommandStore();
 		
@@ -40,7 +40,7 @@ public class CommandStore {
 		if( command == null )
 			throw new IllegalArgumentException( "command cannot be null" );
 		
-		if( category.addCommand( name , command ) )
+		if( ! category.addCommand( name , command ) )
 			throw new CommandAlreadyExistsException( "command " + name + " already exists" );
 	}
 	
@@ -50,7 +50,9 @@ public class CommandStore {
 		try {
 			if( foundCommand != null )
 			foundCommand = foundCommand.clone();
-		} catch (CloneNotSupportedException e) {}
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 		
 		return foundCommand;
 	}
@@ -62,8 +64,14 @@ public class CommandStore {
 		CommandCategory createdCategory = new CommandCategory( categoryName );
 		if( parent != null )
 			parent.addSubcategory( createdCategory );
+		else
+			rootCategory.addSubcategory( createdCategory );
 		
 		return createdCategory;
+	}
+	
+	public boolean contains( String commandName ){
+		return rootCategory.findCommand( commandName ) != null;
 	}
 	
 	public List< CommandCategory > getRootCategories(){
