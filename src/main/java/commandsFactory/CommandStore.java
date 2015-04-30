@@ -67,8 +67,8 @@ public class CommandStore {
 	}
 	
 	public List< CommandCategory > getRootCategories(){
-		// TODO
-		return null;
+		return rootCategory.getSubcategories();
+	}
 	}
 
 }
