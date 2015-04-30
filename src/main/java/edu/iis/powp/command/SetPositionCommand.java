@@ -20,4 +20,9 @@ public class SetPositionCommand implements IPlotterCommand {
 		plotter.setPosition(posX, posY);
 	}
 
+	@Override
+	public SetPositionCommand clone() throws CloneNotSupportedException {
+		return (SetPositionCommand) super.clone();
+	}
+
 }

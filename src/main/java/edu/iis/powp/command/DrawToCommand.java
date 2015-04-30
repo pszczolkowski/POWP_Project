@@ -20,4 +20,9 @@ public class DrawToCommand implements IPlotterCommand {
 		plotter.drawTo(posX, posY);
 	}
 
+	@Override
+	public DrawToCommand clone() throws CloneNotSupportedException {
+		return (DrawToCommand) super.clone();
+	}
+
 }
