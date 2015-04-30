@@ -68,11 +68,12 @@ public class CommandCategory {
 	}
 	
 	boolean addCommand( String name , IPlotterCommand command ){
-		// TODO
-		// tutaj następuje sprawdzanie, czy dana komenda istnieje
-		// i zwrócone zostanie true / false
-		// wyjątek należy rzucać poziom abstrakcji wyżej
-		return false;
+		if( commands.containsKey( name ) )
+			return false;
+		
+		commands.put( name , command );
+		
+		return true;
 	}
 	
 	boolean addSubcategory( CommandCategory category ){
