@@ -45,8 +45,15 @@ public class CommandStore {
 	}
 	
 	public IPlotterCommand get( String commandName ){
-		// TODO
-		return null;
+		IPlotterCommand foundCommand = rootCategory.findCommand( commandName );
+		
+		try {
+			if( foundCommand != null )
+			foundCommand = foundCommand.clone();
+		} catch (CloneNotSupportedException e) {}
+		
+		return foundCommand;
+	}
 	}
 	
 	public List< CommandCategory > getRootCategories(){
