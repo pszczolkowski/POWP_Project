@@ -36,6 +36,13 @@ public class CommandCategory {
 			}
 		}
 		
+		try {
+			if( foundCommand != null )
+			foundCommand = foundCommand.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		
 		return foundCommand;
 	}
 	

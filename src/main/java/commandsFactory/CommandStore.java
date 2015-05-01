@@ -45,20 +45,15 @@ public class CommandStore {
 	}
 	
 	public IPlotterCommand get( String commandName ){
-		IPlotterCommand foundCommand = rootCategory.findCommand( commandName );
-		
-		try {
-			if( foundCommand != null )
-			foundCommand = foundCommand.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		
-		return foundCommand;
+		return rootCategory.findCommand( commandName );
 	}
 	
 	public List< IPlotterCommand > getCommandsOfCategory( CommandCategory category ){
 		return category.getCommands();
+	}
+	
+	public boolean contains( String commandName ){
+		return rootCategory.findCommand( commandName ) != null;
 	}
 	
 	public CommandCategory addCategory(String categoryName, CommandCategory parent) {
@@ -74,17 +69,12 @@ public class CommandStore {
 		return createdCategory;
 	}
 	
-	public boolean contains( String commandName ){
-		return rootCategory.findCommand( commandName ) != null;
+	public CommandCategory findCategory( String name ){
+		return rootCategory.findSubcategory( name );
 	}
 	
 	public List< CommandCategory > getRootCategories(){
 		return rootCategory.getSubcategories();
 	}
-	
-	public CommandCategory findCategory( String name ){
-		return rootCategory.findSubcategory( name );
-	}
-	
 
 }
