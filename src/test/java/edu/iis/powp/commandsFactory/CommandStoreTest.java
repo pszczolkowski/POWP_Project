@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import org.junit.After;
 import org.junit.Test;
 
+import commandsFactory.CategoryManager;
 import commandsFactory.CommandBuilder;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
@@ -20,6 +21,7 @@ import edu.iis.powp.command.IPlotterCommand;
 public class CommandStoreTest {
 	
 	private CommandStore store = CommandStore.getInstance();
+	private CategoryManager categoryManager = store.getCategoryManager();
 	
 	@After
 	public void tearDown(){
@@ -33,7 +35,7 @@ public class CommandStoreTest {
 			.drawLineTo(100, 50)
 			.build();
 		
-		store.add( "test" , command);
+		store.add( "test" , command );
 		
 		assertTrue( "store should contain added command" , store.contains( "test" ) );
 		assertThat( store.get( "test" ) , is( equalTo( command ) ) );
@@ -42,19 +44,19 @@ public class CommandStoreTest {
 	
 	@Test
 	public void addSingleCategory_storeShouldContainThatCategory(){
-		CommandCategory addedCategory = store.addCategory( "testowa" , null );
+		CommandCategory addedCategory = categoryManager.add( "testowa" , null );
 		
 		assertThat( addedCategory , is( notNullValue() ) );
-		assertThat( store.findCategory( "testowa" ) , is( notNullValue() ) );
+		assertThat( categoryManager.find( "testowa" ) , is( notNullValue() ) );
 	}
 	
 	@Test
 	public void addCategoriesTree_shouldContainAllOfThem(){
-		CommandCategory addedCategory = store.addCategory( "testowa2" , null );
-		CommandCategory addedSubcategory = store.addCategory( "subtestowa2" , addedCategory );
+		CommandCategory addedCategory = categoryManager.add( "testowa2" , null );
+		CommandCategory addedSubcategory = categoryManager.add( "subtestowa2" , addedCategory );
 		
-		assertThat( store.findCategory( "testowa2" ) , is( equalTo( addedCategory ) ) );
-		assertThat( store.findCategory( "subtestowa2" ) , is( equalTo( addedSubcategory ) ) );
+		assertThat( categoryManager.find( "testowa2" ) , is( equalTo( addedCategory ) ) );
+		assertThat( categoryManager.find( "subtestowa2" ) , is( equalTo( addedSubcategory ) ) );
 		assertThat( addedCategory.findSubcategory( "subtestowa2" ) , is( equalTo( addedSubcategory ) ) );
 	}
 	
@@ -65,8 +67,8 @@ public class CommandStoreTest {
 		.drawLineTo(100, 50)
 		.build();
 		
-		CommandCategory addedCategory = store.addCategory( "testowa3" , null );
-		CommandCategory addedSubcategory = store.addCategory( "subtestowa3" , addedCategory );
+		CommandCategory addedCategory = categoryManager.add( "testowa3" , null );
+		CommandCategory addedSubcategory = categoryManager.add( "subtestowa3" , addedCategory );
 		
 		store.add( "test3" , command, addedSubcategory);
 		
@@ -92,7 +94,7 @@ public class CommandStoreTest {
 		}
 		
 		assertTrue( "store should contain added command" , store.contains( "test" ) );
-		//assertThat( store.get( "test" ) , is( equalTo( command ) ) );
+		assertThat( store.get( "test" ) , is( equalTo( command ) ) );
 		assertThat( store.get( "test" ) , is( not( sameInstance( command ) ) ) );
 	}
 
