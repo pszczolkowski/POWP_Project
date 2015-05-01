@@ -57,6 +57,10 @@ public class CommandStore {
 		return foundCommand;
 	}
 	
+	public List< IPlotterCommand > getCommandsOfCategory( CommandCategory category ){
+		return category.getCommands();
+	}
+	
 	public CommandCategory addCategory(String categoryName, CommandCategory parent) {
 		if( findCategory( categoryName ) != null )
 			throw new CategoryAlreadyExistsException( "category " + categoryName + " already exists" );
