@@ -64,11 +64,11 @@ public class CommandCategory {
 	public CommandCategory findSubcategory( String name ){
 		CommandCategory foundSubcategory = null;
 		
-		if( this.name.equals( name ) )
-			return this;
-		
 		for( CommandCategory category : subcategories ){
-			foundSubcategory = category.findSubcategory( name );
+			if( category.name.equals( name ) )
+				foundSubcategory = category;
+			else
+				foundSubcategory = category.findSubcategory( name );
 			
 			if( foundSubcategory != null )
 				break;
