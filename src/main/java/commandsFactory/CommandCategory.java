@@ -64,8 +64,7 @@ public class CommandCategory {
 	}
 	
 	public List< CommandCategory > getSubcategories(){
-		// TODO 
-		return null;
+		return new ArrayList<>( subcategories );
 	}
 	
 	boolean addCommand( String name , IPlotterCommand command ){
