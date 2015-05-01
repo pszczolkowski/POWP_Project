@@ -3,6 +3,7 @@ package edu.iis.powp.plotSoft;
 import commandsFactory.CommandFactory;
 import commandsFactoryWindow.CommandFactoryPanel;
 import commandsFactoryWindow.CommandFactoryWindow;
+import commandsListWindow.CommandsListWindow;
 import edu.iis.client.plottermagic.IPlotter;
 import edu.iis.client.plottermagic.preset.FiguresJoe;
 import edu.iis.powp.adapter.LineAdapterPlotterDriver;
@@ -34,6 +35,8 @@ public class TestPlotSoftPatterns {
 
         final Context context = Application.getComponent( Context.class );
 
+        setupCommandsListWindow( context );
+        
         setupCommandFactoryWindow( context );
         CommandFactoryWindow.getPanel().addOnCommandAddedListener( new CommandFactoryPanel.OnCommandAddedListener() {
 			
@@ -42,7 +45,7 @@ public class TestPlotSoftPatterns {
 				setupTest( context , name , command );				
 			}
 		});
-
+        
         setupDrivers( context );
 
         setupPresetTests( context );
@@ -52,7 +55,24 @@ public class TestPlotSoftPatterns {
         loadAllTests( context );
     }
 
-    /**
+    private static void setupCommandsListWindow(Context context) {
+    	Application.addComponent( CommandsListWindow.class );
+		context.addComponentMenu( CommandsListWindow.class , "Commands list" , 3);
+		context.addComponentMenuElement( CommandsListWindow.class , "visible", new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CommandsListWindow window = Application.getComponent( CommandsListWindow.class );
+				if( window.isVisible() ){
+					window.setVisible( false );
+				}else
+					window.setVisible( true );
+			}
+		}, true);
+		
+		Application.getComponent( CommandsListWindow.class ).setVisible( true );
+	}
+
+	/**
      * Sets plotter simulators
      *
      * @param context Application context.
