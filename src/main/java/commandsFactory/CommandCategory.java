@@ -40,8 +40,7 @@ public class CommandCategory {
 	}
 	
 	List< IPlotterCommand > getCommands(){
-		// TODO
-		return null;
+		return new ArrayList<>( commands.values() );
 	}
 	
 	public List< String > getCommandsNames(){
