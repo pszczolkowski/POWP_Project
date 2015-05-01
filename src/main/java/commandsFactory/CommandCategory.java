@@ -40,7 +40,14 @@ public class CommandCategory {
 	}
 	
 	List< IPlotterCommand > getCommands(){
-		return new ArrayList<>( commands.values() );
+		List< IPlotterCommand > result = new ArrayList<>();
+		
+		try {
+			for( IPlotterCommand command : commands.values() )
+				result.add( command.clone() );
+		} catch (CloneNotSupportedException e) {}
+		
+		return result;
 	}
 	
 	public List< String > getCommandsNames(){
