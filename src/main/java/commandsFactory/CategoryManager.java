@@ -35,7 +35,10 @@ public class CategoryManager implements Serializable {
 	}
 	
 	public CommandCategory find( String categoryName ){
-		return rootCategory.findSubcategory( categoryName );
+		if( rootCategory.getName() == categoryName )
+			return rootCategory;
+		else
+			return rootCategory.findSubcategory( categoryName );
 	}
 	
 	public CommandCategory getDefaultCategory() {
@@ -47,7 +50,10 @@ public class CategoryManager implements Serializable {
 	}
 	
 	public boolean contains( CommandCategory category ){
-		return rootCategory.containsSubcategory( category );
+		if( category.equals( rootCategory ) )
+			return true;
+		else
+			return rootCategory.containsSubcategory( category );
 	}
 	
 
@@ -56,7 +62,7 @@ public class CategoryManager implements Serializable {
 		defaultCategory = add( DEFAULT_CATEGORY_NAME , null );
 	}
 	
-	CommandCategory getRootCategory(){
+	public CommandCategory getRootCategory(){
 		return rootCategory;
 	}
 	
