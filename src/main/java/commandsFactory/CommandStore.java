@@ -7,7 +7,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.iis.powp.command.IPlotterCommand;
 
@@ -16,10 +19,13 @@ public class CommandStore {
 	private static final String COMMANDS_PARENT_PATH = "commands";
 	
 	private static CommandStore instance = null;
+	
 	private CategoryManager categoryManager;
+	private Map< CommandCategory , Map< String , IPlotterCommand > > commands;
 	
 	private CommandStore(){
 		categoryManager = new CategoryManager();
+		commands = new HashMap<>();
 	}
 
 	public static CommandStore getInstance(){
@@ -40,20 +46,79 @@ public class CommandStore {
 		if( ! categoryManager.contains( category ) )
 			throw new CategoryDoesntExistException( "category " + category.getName() + " doesn't exist" );
 		
-		if( ! category.addCommand( name , command ) )
+		if( contains( name ) )
 			throw new CommandAlreadyExistsException( "command " + name + " already exists" );
+		
+		Map< String , IPlotterCommand > categoryCommands = commands.get( category );
+		if( categoryCommands == null ){
+			categoryCommands = new HashMap<>();
+			commands.put( category , categoryCommands);
+		}
+		
+		categoryCommands.put( name , command );
 	}
-	
+
 	public IPlotterCommand get( String commandName ){
-		return categoryManager.getRootCategory().findCommand( commandName );
+		IPlotterCommand foundCommand = null;
+		
+		for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
+			if( categoryCommands.containsKey( commandName ) ){
+				foundCommand = categoryCommands.get( commandName );
+				break;
+			}
+		}
+		
+		try {
+			if( foundCommand != null )
+				foundCommand = foundCommand.clone();
+		} catch (CloneNotSupportedException e) {}
+		
+		return foundCommand;
 	}
 	
 	public List< IPlotterCommand > getCommandsOfCategory( CommandCategory category ){
-		return category.getCommands();
+		if( ! categoryManager.contains( category ) )
+			throw new CategoryDoesntExistException( "category " + category.getName() + " doesn't exist" );
+		
+		List< IPlotterCommand > result = new ArrayList<>();
+		
+		Map<String, IPlotterCommand> categoryCommands = commands.get( category );
+		if( categoryCommands != null ){
+			try {
+				for( IPlotterCommand command : categoryCommands.values() ){
+					result.add( command.clone() );
+				}
+			} catch (CloneNotSupportedException e) {}
+		}
+		
+		return result;
+	}
+	
+	public List< String > getCommandsNames(){
+		List< String > names = new ArrayList<>();
+		
+		for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
+			names.addAll( categoryCommands.keySet() );
+		}
+		
+		return names;
+	}
+	
+	public List< String > getCommandsNamesOfCategory( CommandCategory category ){
+		if( ! categoryManager.contains( category ) )
+			throw new CategoryDoesntExistException( "category " + category.getName() + " doeasn't exist" );
+		
+		List< String > names = new ArrayList<>();
+		
+		Map<String, IPlotterCommand> categoryCommands = commands.get( category );
+		if( categoryCommands != null )
+			names.addAll( categoryCommands.keySet() );
+		
+		return names;
 	}
 	
 	public boolean contains( String commandName ){
-		return categoryManager.getRootCategory().findCommand( commandName ) != null;
+		return get( commandName ) != null;
 	}
 
 	public CategoryManager getCategoryManager() {
@@ -62,6 +127,7 @@ public class CommandStore {
 	
 	public void clear(){
 		categoryManager.clear();
+		commands.clear();
 	}
 	
 	public void exportToFile( String fileName ){

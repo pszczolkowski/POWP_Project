@@ -47,7 +47,7 @@ public class CategoryManager implements Serializable {
 	}
 	
 	public boolean contains( CommandCategory category ){
-		return rootCategory.findSubcategory( category ) != null;
+		return rootCategory.containsSubcategory( category );
 	}
 	
 

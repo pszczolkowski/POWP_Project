@@ -2,24 +2,18 @@ package commandsFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-
-import edu.iis.powp.command.IPlotterCommand;
 
 public class CommandCategory implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	private String name;
-	private Map< String , IPlotterCommand > commands;
 	private List< CommandCategory > subcategories;
 	
 	CommandCategory(String name) {
 		this.name = name;
-		this.commands = new HashMap<>();
 		this.subcategories = new ArrayList<>();
 	}
 	
@@ -27,43 +21,6 @@ public class CommandCategory implements Serializable {
 		return name;
 	}
 
-	IPlotterCommand findCommand( String name ){
-		IPlotterCommand foundCommand = commands.get( name );
-		
-		if( foundCommand == null ){
-			for( CommandCategory category : subcategories ){
-				foundCommand = category.findCommand( name );
-				
-				if( foundCommand != null )
-					break;
-			}
-		}
-		
-		try {
-			if( foundCommand != null )
-			foundCommand = foundCommand.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		
-		return foundCommand;
-	}
-	
-	List< IPlotterCommand > getCommands(){
-		List< IPlotterCommand > result = new ArrayList<>();
-		
-		try {
-			for( IPlotterCommand command : commands.values() )
-				result.add( command.clone() );
-		} catch (CloneNotSupportedException e) {}
-		
-		return result;
-	}
-	
-	public List< String > getCommandsNames(){
-		return new ArrayList< String >( commands.keySet() );
-	}
-	
 	public CommandCategory findSubcategory( String name ){
 		CommandCategory foundSubcategory = null;
 		
@@ -84,24 +41,17 @@ public class CommandCategory implements Serializable {
 		return new ArrayList<>( subcategories );
 	}
 	
-	boolean addCommand( String name , IPlotterCommand command ){
-		if( commands.containsKey( name ) )
-			return false;
+	public boolean containsSubcategory(CommandCategory searchCategory) {
+		for( CommandCategory category : subcategories ){
+			if( category == searchCategory )
+				return true;
+			else if( category.containsSubcategory( searchCategory ) )
+				return true;
+		}
 		
-		commands.put( name , command );
-		
-		return true;
-	}
+		return false;
+	}	
 	
-	boolean addSubcategory( CommandCategory category ){
-		if( subcategories.contains( category ) )
-			return false;
-		
-		subcategories.add( category );
-		
-		return true;
-	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash( name );
@@ -121,20 +71,13 @@ public class CommandCategory implements Serializable {
 	}
 
 	
-	public CommandCategory findSubcategory(CommandCategory searchCategory) {
-		CommandCategory foundSubcategory = null;
+	boolean addSubcategory( CommandCategory category ){
+		if( subcategories.contains( category ) )
+			return false;
 		
-		for( CommandCategory category : subcategories ){
-			if( category == searchCategory )
-				foundSubcategory = category;
-			else
-				foundSubcategory = category.findSubcategory( searchCategory );
-			
-			if( foundSubcategory != null )
-				break;
-		}
+		subcategories.add( category );
 		
-		return foundSubcategory;
+		return true;
 	}
 
 }

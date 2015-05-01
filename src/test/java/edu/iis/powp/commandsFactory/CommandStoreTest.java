@@ -52,12 +52,12 @@ public class CommandStoreTest {
 	
 	@Test
 	public void addCategoriesTree_shouldContainAllOfThem(){
-		CommandCategory addedCategory = categoryManager.add( "testowa2" , null );
-		CommandCategory addedSubcategory = categoryManager.add( "subtestowa2" , addedCategory );
+		CommandCategory addedCategory = categoryManager.add( "testowa" , null );
+		CommandCategory addedSubcategory = categoryManager.add( "subtestowa" , addedCategory );
 		
-		assertThat( categoryManager.find( "testowa2" ) , is( equalTo( addedCategory ) ) );
-		assertThat( categoryManager.find( "subtestowa2" ) , is( equalTo( addedSubcategory ) ) );
-		assertThat( addedCategory.findSubcategory( "subtestowa2" ) , is( equalTo( addedSubcategory ) ) );
+		assertThat( categoryManager.find( "testowa" ) , is( equalTo( addedCategory ) ) );
+		assertThat( categoryManager.find( "subtestowa" ) , is( equalTo( addedSubcategory ) ) );
+		assertThat( addedCategory.findSubcategory( "subtestowa" ) , is( equalTo( addedSubcategory ) ) );
 	}
 	
 	@Test
@@ -67,16 +67,16 @@ public class CommandStoreTest {
 		.drawLineTo(100, 50)
 		.build();
 		
-		CommandCategory addedCategory = categoryManager.add( "testowa3" , null );
-		CommandCategory addedSubcategory = categoryManager.add( "subtestowa3" , addedCategory );
+		CommandCategory addedCategory = categoryManager.add( "testowa" , null );
+		CommandCategory addedSubcategory = categoryManager.add( "subtestowa" , addedCategory );
 		
-		store.add( "test3" , command, addedSubcategory);
+		store.add( "test" , command, addedSubcategory);
 		
-		assertThat( store.get("test3") , is( equalTo( command ) ));
-		assertThat( store.get("test3") , is( not( sameInstance( command ) ) ));
+		assertThat( store.get("test") , is( equalTo( command ) ));
+		assertThat( store.get("test") , is( not( sameInstance( command ) ) ));
 	}
 	
-	@Test
+	/*@Test
 	public void serializationTest(){
 		IPlotterCommand command = new CommandBuilder()
 		.setPosition(0, 0)
@@ -96,6 +96,6 @@ public class CommandStoreTest {
 		assertTrue( "store should contain added command" , store.contains( "test" ) );
 		assertThat( store.get( "test" ) , is( equalTo( command ) ) );
 		assertThat( store.get( "test" ) , is( not( sameInstance( command ) ) ) );
-	}
+	}*/
 
 }
