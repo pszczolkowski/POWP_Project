@@ -1,5 +1,6 @@
 package commandsFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,8 +9,10 @@ import java.util.Objects;
 
 import edu.iis.powp.command.IPlotterCommand;
 
-public class CommandCategory {
+public class CommandCategory implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private String name;
 	private Map< String , IPlotterCommand > commands;
 	private List< CommandCategory > subcategories;
@@ -116,7 +119,22 @@ public class CommandCategory {
 		}else
 			return false;
 	}
+
 	
-	
+	public CommandCategory findSubcategory(CommandCategory searchCategory) {
+		CommandCategory foundSubcategory = null;
+		
+		for( CommandCategory category : subcategories ){
+			if( category == searchCategory )
+				foundSubcategory = category;
+			else
+				foundSubcategory = category.findSubcategory( searchCategory );
+			
+			if( foundSubcategory != null )
+				break;
+		}
+		
+		return foundSubcategory;
+	}
 
 }

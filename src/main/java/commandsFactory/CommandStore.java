@@ -1,5 +1,11 @@
 package commandsFactory;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import edu.iis.powp.command.IPlotterCommand;
@@ -14,15 +20,8 @@ public class CommandStore {
 	private CommandCategory rootCategory;
 	
 	private CommandStore(){
-		// TODO
-		// odczyt pliku albo oddelegować go na potem
-		
-		// TODO po odczycie z pliku zmodyfkować linię niżej
 		rootCategory = new CommandCategory( ROOT_CATEGORY_NAME );
-		
-		defaultCategory = findCategory( DEFAULT_CATEGORY_NAME );
-		if( defaultCategory == null )
-			defaultCategory = addCategory( DEFAULT_CATEGORY_NAME , null );
+		defaultCategory = addCategory( DEFAULT_CATEGORY_NAME , null );
 	}
 
 	public static CommandStore getInstance(){
@@ -39,6 +38,9 @@ public class CommandStore {
 	public void add( String name , IPlotterCommand command , CommandCategory category ){
 		if( command == null )
 			throw new IllegalArgumentException( "command cannot be null" );
+		
+		if( ! categoryExists( category ) )
+			throw new CategoryDoesntExistException( "category " + category.getName() + " doesn't exist" );
 		
 		if( ! category.addCommand( name , command ) )
 			throw new CommandAlreadyExistsException( "command " + name + " already exists" );
@@ -73,8 +75,40 @@ public class CommandStore {
 		return rootCategory.findSubcategory( name );
 	}
 	
+	public boolean categoryExists( CommandCategory category ){
+		return rootCategory.findSubcategory( category ) != null;
+	}
+	
 	public List< CommandCategory > getRootCategories(){
 		return rootCategory.getSubcategories();
 	}
 
+	public void clear(){
+		rootCategory = new CommandCategory( ROOT_CATEGORY_NAME );
+		defaultCategory = addCategory( DEFAULT_CATEGORY_NAME , null );
+	}
+	
+	public void exportToFile( String fileName ){
+		try( ObjectOutputStream out = new ObjectOutputStream( new FileOutputStream( fileName ) ) ) {
+			out.writeObject( rootCategory );
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void importFromFile( String fileName ) throws FileNotFoundException {		
+		try( ObjectInputStream in = new ObjectInputStream( new FileInputStream( fileName ) ) ) {
+			rootCategory = (CommandCategory) in.readObject();
+			defaultCategory = rootCategory.findSubcategory( DEFAULT_CATEGORY_NAME );
+			if( defaultCategory == null )
+				defaultCategory = addCategory( DEFAULT_CATEGORY_NAME , null );
+		} catch( FileNotFoundException e ){
+			throw e;
+		}catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
