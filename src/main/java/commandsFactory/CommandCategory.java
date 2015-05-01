@@ -44,9 +44,8 @@ public class CommandCategory {
 		return null;
 	}
 	
-	List< String > getCommandNames(){
-		// TODO
-		return null;
+	public List< String > getCommandsNames(){
+		return new ArrayList< String >( commands.keySet() );
 	}
 	
 	public CommandCategory findSubcategory( String name ){
