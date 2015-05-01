@@ -1,5 +1,7 @@
 package edu.iis.powp.command;
 
+import java.util.Objects;
+
 import edu.iis.client.plottermagic.IPlotter;
 
 /**
@@ -23,6 +25,23 @@ public class SetPositionCommand implements IPlotterCommand {
 	@Override
 	public SetPositionCommand clone() throws CloneNotSupportedException {
 		return (SetPositionCommand) super.clone();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash( posX , posY );
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		
+		if( obj instanceof SetPositionCommand ){
+			SetPositionCommand other = (SetPositionCommand) obj;
+			return Objects.equals( posX , other.posX ) && Objects.equals( posY , other.posY );
+		}else
+			return false;
 	}
 
 }

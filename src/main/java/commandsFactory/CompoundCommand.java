@@ -47,7 +47,11 @@ public class CompoundCommand implements ICompoundCommand , Cloneable {
 	@Override
 	public CompoundCommand clone() throws CloneNotSupportedException {
 		CompoundCommand result = (CompoundCommand) super.clone();
-		result.commands = new ArrayList< IPlotterCommand >( commands );
+		List< IPlotterCommand > newCommands = new ArrayList<>();
+		
+		for( IPlotterCommand command : commands )
+			newCommands.add( command.clone() );
+		result.commands = newCommands;
 		
 		return result;
 	}
