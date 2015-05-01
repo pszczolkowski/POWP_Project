@@ -49,5 +49,23 @@ public class CommandStoreTest {
 		assertThat( store.findCategory( "subtestowa2" ) , is( equalTo( addedSubcategory ) ) );
 		assertThat( addedCategory.findSubcategory( "subtestowa2" ) , is( equalTo( addedSubcategory ) ) );
 	}
+	
+	@Test
+	public void addCategoriesTree_andOneCommand_shouldFindThatCommand(){
+		CommandStore store = CommandStore.getInstance();
+		
+		IPlotterCommand command = new CommandBuilder()
+		.setPosition(0, 0)
+		.drawLineTo(100, 50)
+		.build();
+		
+		CommandCategory addedCategory = store.addCategory( "testowa3" , null );
+		CommandCategory addedSubcategory = store.addCategory( "subtestowa3" , addedCategory );
+		
+		store.add( "test3" , command, addedSubcategory);
+		
+		assertThat( store.get("test3") , is( equalTo( command ) ));
+		assertThat( store.get("test3") , is( not( sameInstance( command ) ) ));
+	}
 
 }
