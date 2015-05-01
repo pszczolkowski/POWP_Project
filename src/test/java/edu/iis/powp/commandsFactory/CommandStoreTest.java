@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import commandsFactory.CommandBuilder;
+import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
 import edu.iis.powp.command.IPlotterCommand;
 
@@ -25,6 +26,16 @@ public class CommandStoreTest {
 		assertTrue( "store should contain added command" , store.contains( "test" ) );
 		assertThat( store.get( "test" ) , is( equalTo( command ) ) );
 		assertThat( store.get( "test" ) , is( not( sameInstance( command ) ) ) );
+	}
+	
+	@Test
+	public void addSingleCategory_storeShouldContainThatCategory(){
+		CommandStore store = CommandStore.getInstance();
+		
+		CommandCategory addedCategory = store.addCategory( "testowa" , null );
+		
+		assertThat( addedCategory , is( notNullValue() ) );
+		assertThat( store.findCategory( "testowa" ) , is( notNullValue() ) );
 	}
 
 }
