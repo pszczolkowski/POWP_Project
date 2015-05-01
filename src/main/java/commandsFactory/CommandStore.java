@@ -1,5 +1,6 @@
 package commandsFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +13,7 @@ import edu.iis.powp.command.IPlotterCommand;
 
 public class CommandStore {
 
+	private static final String COMMANDS_PARENT_PATH = "commands";
 	private static final String ROOT_CATEGORY_NAME = "all";
 	private static final String DEFAULT_CATEGORY_NAME = "general";
 	
@@ -89,7 +91,10 @@ public class CommandStore {
 	}
 	
 	public void exportToFile( String fileName ){
-		try( ObjectOutputStream out = new ObjectOutputStream( new FileOutputStream( fileName ) ) ) {
+		File folder = new File( COMMANDS_PARENT_PATH );
+		folder.mkdirs();
+		
+		try( ObjectOutputStream out = new ObjectOutputStream( new FileOutputStream( new File( folder , fileName ) ) ) ) {
 			out.writeObject( rootCategory );
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -97,7 +102,7 @@ public class CommandStore {
 	}
 	
 	public void importFromFile( String fileName ) throws FileNotFoundException {		
-		try( ObjectInputStream in = new ObjectInputStream( new FileInputStream( fileName ) ) ) {
+		try( ObjectInputStream in = new ObjectInputStream( new FileInputStream( new File( COMMANDS_PARENT_PATH , fileName ) ) ) ) {
 			rootCategory = (CommandCategory) in.readObject();
 			defaultCategory = rootCategory.findSubcategory( DEFAULT_CATEGORY_NAME );
 			if( defaultCategory == null )
