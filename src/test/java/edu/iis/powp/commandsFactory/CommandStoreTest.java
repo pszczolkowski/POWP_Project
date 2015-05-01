@@ -76,7 +76,7 @@ public class CommandStoreTest {
 		assertThat( store.get("test") , is( not( sameInstance( command ) ) ));
 	}
 	
-	/*@Test
+	@Test
 	public void serializationTest(){
 		IPlotterCommand command = new CommandBuilder()
 		.setPosition(0, 0)
@@ -96,6 +96,6 @@ public class CommandStoreTest {
 		assertTrue( "store should contain added command" , store.contains( "test" ) );
 		assertThat( store.get( "test" ) , is( equalTo( command ) ) );
 		assertThat( store.get( "test" ) , is( not( sameInstance( command ) ) ) );
-	}*/
+	}
 
 }

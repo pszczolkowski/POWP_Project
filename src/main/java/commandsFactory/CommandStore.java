@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,9 @@ import java.util.Map;
 
 import edu.iis.powp.command.IPlotterCommand;
 
-public class CommandStore {
+public class CommandStore implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private static final String COMMANDS_PARENT_PATH = "commands";
 	
 	private static CommandStore instance = null;
@@ -135,7 +137,7 @@ public class CommandStore {
 		folder.mkdirs();
 		
 		try( ObjectOutputStream out = new ObjectOutputStream( new FileOutputStream( new File( folder , fileName ) ) ) ) {
-			out.writeObject( categoryManager );
+			out.writeObject( this );
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -143,7 +145,9 @@ public class CommandStore {
 	
 	public void importFromFile( String fileName ) throws FileNotFoundException {		
 		try( ObjectInputStream in = new ObjectInputStream( new FileInputStream( new File( COMMANDS_PARENT_PATH , fileName ) ) ) ) {
-			categoryManager = (CategoryManager) in.readObject();
+			CommandStore readStore = (CommandStore) in.readObject();
+			categoryManager = readStore.categoryManager;
+			commands = readStore.commands;
 		} catch( FileNotFoundException e ){
 			throw e;
 		}catch (IOException e) {
