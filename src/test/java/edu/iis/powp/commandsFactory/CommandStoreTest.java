@@ -37,5 +37,17 @@ public class CommandStoreTest {
 		assertThat( addedCategory , is( notNullValue() ) );
 		assertThat( store.findCategory( "testowa" ) , is( notNullValue() ) );
 	}
+	
+	@Test
+	public void addCategoriesTree_shouldContainAllOfThem(){
+		CommandStore store = CommandStore.getInstance();
+		
+		CommandCategory addedCategory = store.addCategory( "testowa2" , null );
+		CommandCategory addedSubcategory = store.addCategory( "subtestowa2" , addedCategory );
+		
+		assertThat( store.findCategory( "testowa2" ) , is( equalTo( addedCategory ) ) );
+		assertThat( store.findCategory( "subtestowa2" ) , is( equalTo( addedSubcategory ) ) );
+		assertThat( addedCategory.findSubcategory( "subtestowa2" ) , is( equalTo( addedSubcategory ) ) );
+	}
 
 }
