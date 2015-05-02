@@ -2,6 +2,7 @@ package commandsListWindow;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -41,7 +42,6 @@ import commandsFactory.CategoryManager;
 import commandsFactory.CommandBuilder;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
-
 import edu.iis.client.plottermagic.IPlotter;
 import edu.iis.powp.app.Application;
 import edu.iis.powp.app.DriverManager;
@@ -82,9 +82,12 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		store.add( "kwadrat" , cmd1 , figures );
 		store.add( "kolo" , new SetPositionCommand(0,0) , figures );
 		
-		initUI();
-		displayCommandsTree();
-		tree.expandRow(0);
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				initUI();
+			}
+		});
 		
 		EventService.getInstance().subscribe( CommandsListChangedEvent.class , this );
 		EventService.getInstance().subscribe( CommandAddedEvent.class , this );
@@ -115,6 +118,8 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 
 
 	private void initUI() {
+		setVisible( true );
+		
 		// MAIN WINDOW
 		getContentPane().setLayout( new BorderLayout() );
 		
@@ -127,7 +132,7 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		setSize( new Dimension( 210 , 400 ) );
 		setMinimumSize( new Dimension( 210 , 300 ) );
 		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		setVisible( true );
+		
 		setResizable( true );
 		
 		tabbedPane = new JTabbedPane();
@@ -172,6 +177,9 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		searchField = new JTextField();
 		searchField.getDocument().addDocumentListener( this );
 		searchFieldPanel.add( searchField );
+		
+		displayCommandsTree();
+		tree.expandRow(0);
 	}
 
 	@Override
@@ -267,6 +275,9 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 			treeModel.reload();
 			
 			searchCommands();
+			
+			selectedCommandName = null;
+			executeButton.setEnabled( false );
 		}else if( event.getType() == CommandAddedEvent.class ){
 			CommandAddedEvent specificEvent = (CommandAddedEvent) event;
 			CommandCategory category = specificEvent.getCategory();
@@ -276,6 +287,9 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 			treeModel.insertNodeInto( newNode , node, node.getChildCount() );
 			
 			searchCommands();
+			
+			selectedCommandName = null;
+			executeButton.setEnabled( false );
 		}
 	}
 

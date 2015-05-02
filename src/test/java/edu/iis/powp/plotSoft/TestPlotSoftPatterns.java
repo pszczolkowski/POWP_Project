@@ -1,6 +1,7 @@
 package edu.iis.powp.plotSoft;
 
 import commandsFactory.CommandFactory;
+import commandsFactory.CommandStore;
 import commandsFactoryWindow.CommandFactoryPanel;
 import commandsFactoryWindow.CommandFactoryWindow;
 import commandsListWindow.CommandsListWindow;
@@ -16,12 +17,18 @@ import edu.iis.powp.command.IPlotterCommand;
 import edu.iis.powp.command.SetPositionCommand;
 import edu.iis.powp.gui.event.predefine.SelectTestFigureOptionListener;
 import edu.kis.powp.drawer.shape.line.BasicLine;
+import eventNotifier.CommandsListChangedEvent;
+import eventNotifier.Event;
+import eventNotifier.EventService;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JOptionPane;
 
 import static commandsFactoryWindow.CommandFactoryWindowSetup.setupCommandFactoryWindow;
 
@@ -68,6 +75,30 @@ public class TestPlotSoftPatterns {
 					window.setVisible( true );
 			}
 		}, true);
+		context.addComponentMenuElement( CommandsListWindow.class , "Export to file", new ActionListener(	) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String fileName = JOptionPane.showInputDialog( null , "Enter file name:" , "Export" , JOptionPane.QUESTION_MESSAGE );
+				if( fileName != null ){
+					CommandStore.getInstance().exportToFile(fileName);
+				}
+			}
+		}, false);
+		context.addComponentMenuElement( CommandsListWindow.class , "Import from file", new ActionListener(	) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String fileName = JOptionPane.showInputDialog( null , "Enter file name:" , "Import" , JOptionPane.QUESTION_MESSAGE );
+				if( fileName != null ){
+					try {
+						CommandStore.getInstance().importFromFile(fileName);
+						Event event = new CommandsListChangedEvent( null );
+						EventService.getInstance().publish(event);
+					} catch (FileNotFoundException e1) {
+						JOptionPane.showMessageDialog(null, "File doesn't exist", "Error", JOptionPane.ERROR_MESSAGE);
+					};
+				}
+			}
+		}, false);
 		
 		Application.getComponent( CommandsListWindow.class ).setVisible( true );
 	}
