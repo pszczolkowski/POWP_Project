@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -13,8 +16,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
@@ -36,11 +41,13 @@ import commandsFactory.CategoryManager;
 import commandsFactory.CommandBuilder;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
+
 import edu.iis.client.plottermagic.IPlotter;
 import edu.iis.powp.app.Application;
 import edu.iis.powp.app.DriverManager;
 import edu.iis.powp.command.IPlotterCommand;
 import edu.iis.powp.command.SetPositionCommand;
+import eventNotifier.CategoryListChangedEvent;
 import eventNotifier.CommandAddedEvent;
 import eventNotifier.CommandsListChangedEvent;
 import eventNotifier.Event;
@@ -60,6 +67,8 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 	private JTabbedPane tabbedPane;
 	private JTextField searchField;
 	private DefaultTreeModel treeModel;
+	private JPopupMenu popupMenu;
+	private JMenuItem addSubcategoryMenuItem;
 	
 	public CommandsListWindow() {
 		super();
@@ -136,7 +145,13 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		tree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
 		tree.addTreeSelectionListener( this );
 		tree.setModel( treeModel );
+		tree.addMouseListener( mouseListener );
 		allPanel.add( tree , BorderLayout.CENTER );
+		
+		popupMenu = new JPopupMenu();
+		addSubcategoryMenuItem = new JMenuItem( "add subcategory" );
+		addSubcategoryMenuItem.addMouseListener( mouseListener );
+		popupMenu.add( addSubcategoryMenuItem );
 		
 		// SEARCH PANEL
 		JPanel searchPanel = new JPanel();
@@ -254,21 +269,72 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 			searchCommands();
 		}else if( event.getType() == CommandAddedEvent.class ){
 			CommandAddedEvent specificEvent = (CommandAddedEvent) event;
-			String categoryName = specificEvent.getCategory().getName();
+			CommandCategory category = specificEvent.getCategory();
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode( specificEvent.getCommandName() );
 			
-			@SuppressWarnings("rawtypes")
-			Enumeration enumeration = rootNode.depthFirstEnumeration();
-			while( enumeration.hasMoreElements() ) {
-			    DefaultMutableTreeNode node = (DefaultMutableTreeNode) enumeration.nextElement();
-			    if ( !node.isLeaf() && ((String)node.getUserObject()).equals( categoryName )) {
-			    	treeModel.insertNodeInto( newNode , node, node.getChildCount() );
-			    	
-			    	break;
-			    }
-			}
+			DefaultMutableTreeNode node = findCategoryNode(category);
+			treeModel.insertNodeInto( newNode , node, node.getChildCount() );
 			
 			searchCommands();
+		}
+	}
+
+
+
+
+
+	private DefaultMutableTreeNode findCategoryNode( CommandCategory category ){
+		@SuppressWarnings("rawtypes")
+		Enumeration enumeration = rootNode.depthFirstEnumeration();
+		while( enumeration.hasMoreElements() ) {
+		    DefaultMutableTreeNode node = (DefaultMutableTreeNode) enumeration.nextElement();
+		    if ( !node.isLeaf() && ((String)node.getUserObject()).equals( category.getName() )) {
+		    	return node;
+		    }
+		}
+		
+		return null;
+	}
+	
+	private MouseListener mouseListener = new MouseAdapter() {
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if( e.getSource() == tree && e.isPopupTrigger() ){
+				int row = tree.getClosestRowForLocation(e.getX(), e.getY());
+		        tree.setSelectionRow(row);
+		        
+		        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+		        if( ! node.isLeaf() ){
+		        	popupMenu.show(e.getComponent(), e.getX(), e.getY());
+		        }
+			}else if( e.getSource() == addSubcategoryMenuItem ){
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				if( node.isLeaf() ){
+					JOptionPane.showMessageDialog( CommandsListWindow.this , "No category selected" );
+				}else{
+					CommandCategory parentCategory = store.getCategoryManager().find( (String) node.getUserObject() );
+					addSubcategory(parentCategory);
+				}
+			}
+			
+		}
+	};
+	
+	private void addSubcategory( CommandCategory parentCategory ){
+		String name = JOptionPane.showInputDialog( this , "Enter subcategory name:" , "New subcategory" , JOptionPane.QUESTION_MESSAGE);
+		if( name != null ){
+			if( store.getCategoryManager().find( name ) != null ){
+				JOptionPane.showMessageDialog( CommandsListWindow.this , "Category with that name already exists");
+				return;
+			}
+			CommandCategory addedCategory = store.getCategoryManager().add( name );
+			// aktualizacja drzewa
+			DefaultMutableTreeNode newNode = new CategoryTreeNode( addedCategory.getName() );
+			DefaultMutableTreeNode node = findCategoryNode( parentCategory );
+			treeModel.insertNodeInto( newNode , node, node.getChildCount() );
+			
+			Event event = new CategoryListChangedEvent( this );
+			EventService.getInstance().publish(event);
 		}
 	}
 	
