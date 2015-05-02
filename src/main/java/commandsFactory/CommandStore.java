@@ -78,6 +78,22 @@ public class CommandStore implements Serializable {
 		return foundCommand;
 	}
 	
+	public List< IPlotterCommand > getNamedLike( String nameLike ){
+		List< IPlotterCommand > foundCommands = new ArrayList<>();
+		
+		try {
+			for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
+				for( String name : categoryCommands.keySet() ){
+					if( name.contains( nameLike ) ){
+						foundCommands.add( categoryCommands.get( name ).clone() );
+					}
+				}
+			}
+		} catch (CloneNotSupportedException e) {}
+		
+		return foundCommands;
+	}
+	
 	public List< IPlotterCommand > getCommandsOfCategory( CommandCategory category ){
 		if( ! categoryManager.contains( category ) )
 			throw new CategoryDoesntExistException( "category " + category.getName() + " doesn't exist" );
@@ -117,6 +133,20 @@ public class CommandStore implements Serializable {
 			names.addAll( categoryCommands.keySet() );
 		
 		return names;
+	}
+	
+	public List< String > getCommandsNamesLike( String nameLike ){
+		List< String > foundNAmes = new ArrayList<>();
+		
+		for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
+			for( String name : categoryCommands.keySet() ){
+				if( name.contains( nameLike ) ){
+					foundNAmes.add( name );
+				}
+			}
+		}
+		
+		return foundNAmes;
 	}
 	
 	public boolean contains( String commandName ){
