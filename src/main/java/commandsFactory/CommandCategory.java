@@ -80,4 +80,14 @@ public class CommandCategory implements Serializable {
 		return true;
 	}
 
+	public List<CommandCategory> getAllSubcategories() {
+		List< CommandCategory > allSubcategories = new ArrayList<>();
+		
+		allSubcategories.addAll( subcategories );
+		for( CommandCategory subcategory : subcategories )
+			allSubcategories.addAll( subcategory.getAllSubcategories() );
+		
+		return allSubcategories;
+	}
+
 }

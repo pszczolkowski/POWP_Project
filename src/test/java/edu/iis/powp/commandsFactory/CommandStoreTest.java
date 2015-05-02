@@ -5,9 +5,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Test;
@@ -16,6 +20,7 @@ import commandsFactory.CategoryManager;
 import commandsFactory.CommandBuilder;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
+
 import edu.iis.powp.command.IPlotterCommand;
 
 public class CommandStoreTest {
@@ -96,6 +101,27 @@ public class CommandStoreTest {
 		assertTrue( "store should contain added command" , store.contains( "test" ) );
 		assertThat( store.get( "test" ) , is( equalTo( command ) ) );
 		assertThat( store.get( "test" ) , is( not( sameInstance( command ) ) ) );
+	}
+	
+	@Test
+	public void addCategoriesWithSubcategories_getAllCategoriesShouldReturnThemAll(){
+		CommandCategory category1 = categoryManager.add( "test1" );
+		CommandCategory category2 = categoryManager.add( "test2" , category1 );
+		CommandCategory category3 = categoryManager.add( "test3" , category1 );
+		CommandCategory category4 = categoryManager.add( "test4" , category2 );
+		
+		Set< CommandCategory > addedCategories = new HashSet<>();
+		addedCategories.add( categoryManager.getRootCategory() );
+		addedCategories.add( categoryManager.getDefaultCategory() );
+		addedCategories.add( category1 );
+		addedCategories.add( category1 );
+		addedCategories.add( category2 );
+		addedCategories.add( category3 );
+		addedCategories.add( category4 );
+		
+		Set< CommandCategory > loadedCategories = new HashSet<>( categoryManager.getAllCategories() );
+		
+		assertThat( loadedCategories , is( equalTo( addedCategories ) ));
 	}
 
 }

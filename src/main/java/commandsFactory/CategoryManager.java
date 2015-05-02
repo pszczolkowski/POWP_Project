@@ -1,6 +1,7 @@
 package commandsFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryManager implements Serializable {
@@ -39,6 +40,15 @@ public class CategoryManager implements Serializable {
 			return rootCategory;
 		else
 			return rootCategory.findSubcategory( categoryName );
+	}
+	
+	public List< CommandCategory > getAllCategories(){
+		List< CommandCategory > allCategories = new ArrayList<>();
+		
+		allCategories.add( rootCategory );
+		allCategories.addAll( rootCategory.getAllSubcategories() );
+		
+		return allCategories;
 	}
 	
 	public CommandCategory getDefaultCategory() {
