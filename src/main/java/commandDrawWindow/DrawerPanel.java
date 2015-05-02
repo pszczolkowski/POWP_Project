@@ -26,8 +26,8 @@ public class DrawerPanel extends JPanel implements Subscriber {
     private final JRadioButton setPositionButton = new JRadioButton( "Set Position" );
     private final JRadioButton drawLineButton = new JRadioButton( "Draw Line" );
     private final JButton clearButton = new JButton( "Clear Panel" );
-    private final JLabel commandNameLabel = new JLabel( "Command name" );
-    private final JLabel commandCategoryLabel = new JLabel( "Command category" );
+    private final JLabel commandNameLabel = new JLabel( "Command name", SwingConstants.CENTER );
+    private final JLabel commandCategoryLabel = new JLabel( "Command category", SwingConstants.CENTER );
     private final JTextField commandName = new JTextField();
     private final JComboBox commandCategory = new JComboBox();
     private final JButton saveButton = new JButton( "Save Command" );
