@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -28,6 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
 import commandsFactory.CategoryManager;
@@ -39,6 +41,7 @@ import edu.iis.powp.app.Application;
 import edu.iis.powp.app.DriverManager;
 import edu.iis.powp.command.IPlotterCommand;
 import edu.iis.powp.command.SetPositionCommand;
+import eventNotifier.CommandAddedEvent;
 import eventNotifier.CommandsListChangedEvent;
 import eventNotifier.Event;
 import eventNotifier.EventService;
@@ -56,6 +59,7 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 	private String selectedCommandName = null;
 	private JTabbedPane tabbedPane;
 	private JTextField searchField;
+	private DefaultTreeModel treeModel;
 	
 	public CommandsListWindow() {
 		super();
@@ -74,12 +78,14 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		tree.expandRow(0);
 		
 		EventService.getInstance().subscribe( CommandsListChangedEvent.class , this );
+		EventService.getInstance().subscribe( CommandAddedEvent.class , this );
 	}
 
 
 	private void displayCommandsTree() {
 		rootNode.removeAllChildren();
-		displayCommandsOfCategory( rootNode , CommandStore.getInstance().getCategoryManager().getRootCategory() );
+		displayCommandsOfCategory( rootNode , store.getCategoryManager().getRootCategory() );
+		tree.repaint();
 	}
 
 	
@@ -103,7 +109,7 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		// MAIN WINDOW
 		getContentPane().setLayout( new BorderLayout() );
 		
-		executeButton = new JButton( "execut" );
+		executeButton = new JButton( "execute" );
 		executeButton.setEnabled( false );
 		executeButton.addActionListener( this );
 		add( executeButton , BorderLayout.SOUTH );
@@ -125,9 +131,11 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		tabbedPane.addTab( "All" , new JScrollPane( allPanel ) );
 		
 		rootNode = new DefaultMutableTreeNode( "all" );
+		treeModel = new DefaultTreeModel( rootNode );
 		tree = new JTree( rootNode ) ; 
 		tree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
 		tree.addTreeSelectionListener( this );
+		tree.setModel( treeModel );
 		allPanel.add( tree , BorderLayout.CENTER );
 		
 		// SEARCH PANEL
@@ -241,6 +249,26 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 	public void inform(Event event) {
 		if( event.getType() == CommandsListChangedEvent.class ){
 			displayCommandsTree();
+			treeModel.reload();
+			
+			searchCommands();
+		}else if( event.getType() == CommandAddedEvent.class ){
+			CommandAddedEvent specificEvent = (CommandAddedEvent) event;
+			String categoryName = specificEvent.getCategory().getName();
+			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode( specificEvent.getCommandName() );
+			
+			@SuppressWarnings("rawtypes")
+			Enumeration enumeration = rootNode.depthFirstEnumeration();
+			while( enumeration.hasMoreElements() ) {
+			    DefaultMutableTreeNode node = (DefaultMutableTreeNode) enumeration.nextElement();
+			    if ( !node.isLeaf() && ((String)node.getUserObject()).equals( categoryName )) {
+			    	treeModel.insertNodeInto( newNode , node, node.getChildCount() );
+			    	
+			    	break;
+			    }
+			}
+			
+			searchCommands();
 		}
 	}
 	
