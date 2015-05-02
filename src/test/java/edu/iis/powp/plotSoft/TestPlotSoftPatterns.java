@@ -20,14 +20,12 @@ import edu.kis.powp.drawer.shape.line.BasicLine;
 import eventNotifier.CommandsListChangedEvent;
 import eventNotifier.Event;
 import eventNotifier.EventService;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JOptionPane;
 
 import static commandsFactoryWindow.CommandFactoryWindowSetup.setupCommandFactoryWindow;
@@ -43,68 +41,87 @@ public class TestPlotSoftPatterns {
         final Context context = Application.getComponent( Context.class );
 
         setupCommandsListWindow( context );
-        
+
         setupCommandFactoryWindow( context );
         CommandFactoryWindow.getPanel().addOnCommandAddedListener( new CommandFactoryPanel.OnCommandAddedListener() {
-			
-			@Override
-			public void onCommandAdded(String name, IPlotterCommand command) {
-				setupTest( context , name , command );				
-			}
-		});
-        
+
+            @Override
+            public void onCommandAdded( String name, IPlotterCommand command ) {
+                setupTest( context, name, command );
+            }
+        } );
+
         setupDrivers( context );
 
         setupPresetTests( context );
 
         setupSecretCommandTest( context );
-        
+
         loadAllTests( context );
+
+        new commandDrawWindow.CommandDrawWindow();
     }
 
-    private static void setupCommandsListWindow(Context context) {
-    	Application.addComponent( CommandsListWindow.class );
-		context.addComponentMenu( CommandsListWindow.class , "Commands list" , 3);
-		context.addComponentMenuElement( CommandsListWindow.class , "visible", new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				CommandsListWindow window = Application.getComponent( CommandsListWindow.class );
-				if( window.isVisible() ){
-					window.setVisible( false );
-				}else
-					window.setVisible( true );
-			}
-		}, true);
-		context.addComponentMenuElement( CommandsListWindow.class , "Export to file", new ActionListener(	) {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String fileName = JOptionPane.showInputDialog( null , "Enter file name:" , "Export" , JOptionPane.QUESTION_MESSAGE );
-				if( fileName != null ){
-					CommandStore.getInstance().exportToFile(fileName);
-				}
-			}
-		}, false);
-		context.addComponentMenuElement( CommandsListWindow.class , "Import from file", new ActionListener(	) {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String fileName = JOptionPane.showInputDialog( null , "Enter file name:" , "Import" , JOptionPane.QUESTION_MESSAGE );
-				if( fileName != null ){
-					try {
-						CommandStore.getInstance().importFromFile(fileName);
-						Event event = new CommandsListChangedEvent( null );
-						EventService.getInstance().publish(event);
-					} catch (FileNotFoundException e1) {
-						JOptionPane.showMessageDialog(null, "File doesn't exist", "Error", JOptionPane.ERROR_MESSAGE);
-					};
-				}
-			}
-		}, false);
-		
-		Application.getComponent( CommandsListWindow.class ).setVisible( true );
-	}
+    private static void setupCommandsListWindow( Context context ) {
+        Application.addComponent( CommandsListWindow.class );
+        context.addComponentMenu( CommandsListWindow.class, "Commands list", 3 );
+        context.addComponentMenuElement( CommandsListWindow.class, "visible", new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                CommandsListWindow window = Application.getComponent( CommandsListWindow.class );
+                if ( window.isVisible() ) {
+                    window.setVisible( false );
+                } else {
+                    window.setVisible( true );
+                }
+            }
+        }, true );
+        context.addComponentMenuElement( CommandsListWindow.class, "Export to file", new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                String fileName = JOptionPane.showInputDialog( null, "Enter file name:", "Export", JOptionPane.QUESTION_MESSAGE );
+                if ( fileName != null ) {
+                    CommandStore.getInstance().exportToFile( fileName );
+                }
+            }
+        }, false );
+        context.addComponentMenuElement( CommandsListWindow.class, "Import from file", new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                String fileName = JOptionPane.showInputDialog( null, "Enter file name:", "Import", JOptionPane.QUESTION_MESSAGE );
+                if ( fileName != null ) {
+                    try {
+                        CommandStore.getInstance().importFromFile( fileName );
+                        Event event = new CommandsListChangedEvent( null );
+                        EventService.getInstance().publish( event );
+                    } catch ( FileNotFoundException e1 ) {
+                        JOptionPane.showMessageDialog( null, "File doesn't exist", "Error", JOptionPane.ERROR_MESSAGE );
+                    };
+                }
+            }
+        }, false );
 
-	/**
-     * Sets plotter simulators
+        Application.getComponent( CommandsListWindow.class ).setVisible( true );
+    }
+
+    /**
+     * ======= private static void setupCommandsListWindow( Context context ) {
+     * Application.addComponent( CommandsListWindow.class );
+     * context.addComponentMenu( CommandsListWindow.class, "Commands list", 3 );
+     * context.addComponentMenuElement( CommandsListWindow.class, "visible", new
+     * ActionListener() {
+     *
+     * @Override public void actionPerformed( ActionEvent e ) {
+     * CommandsListWindow window = Application.getComponent(
+     * CommandsListWindow.class ); if ( window.isVisible() ) {
+     * window.setVisible( false ); } else { window.setVisible( true ); } } },
+     * true );
+     *
+     * Application.getComponent( CommandsListWindow.class ).setVisible( true );
+     * }
+     *
+     * /**
+     * >>>>>>> Stashed changes Sets plotter simulators
      *
      * @param context Application context.
      */
