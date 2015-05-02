@@ -92,7 +92,7 @@ public class CommandStore implements Serializable {
 		if( command == null )
 			throw new IllegalArgumentException( "command cannot be null" );
 		
-		if( ! categoryManager.contains( category ) )
+		if( ! categoryManager.exists( category ) )
 			throw new CategoryDoesntExistException( "category " + category.getName() + " doesn't exist" );
 		
 		if( contains( name ) )
@@ -172,7 +172,7 @@ public class CommandStore implements Serializable {
 	 *             jeżeli podana kategoria nie istnieje w magazynie
 	 */
 	public List< IPlotterCommand > getCommandsOfCategory( CommandCategory category ){
-		if( ! categoryManager.contains( category ) )
+		if( ! categoryManager.exists( category ) )
 			throw new CategoryDoesntExistException( "category " + category.getName() + " doesn't exist" );
 		
 		List< IPlotterCommand > result = new ArrayList<>();
@@ -216,7 +216,7 @@ public class CommandStore implements Serializable {
 	 *             jeżeli podana kategoria nie istnieje
 	 */
 	public List< String > getCommandsNamesOfCategory( CommandCategory category ){
-		if( ! categoryManager.contains( category ) )
+		if( ! categoryManager.exists( category ) )
 			throw new CategoryDoesntExistException( "category " + category.getName() + " doeasn't exist" );
 		
 		List< String > names = new ArrayList<>();

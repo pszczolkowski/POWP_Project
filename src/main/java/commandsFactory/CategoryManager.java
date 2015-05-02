@@ -28,7 +28,7 @@ public class CategoryManager implements Serializable {
 		
 		CommandCategory createdCategory = new CommandCategory( name );
 		if( parent != null ){
-			if( ! contains( parent ) )
+			if( ! exists( parent ) )
 				throw new CategoryDoesntExistException( "parent category " + parent.getName() + " doeasn't exist" );
 				
 			parent.addSubcategory( createdCategory );
@@ -63,7 +63,7 @@ public class CategoryManager implements Serializable {
 		return rootCategory.getSubcategories();
 	}
 	
-	public boolean contains( CommandCategory category ){
+	public boolean exists( CommandCategory category ){
 		if( category.equals( rootCategory ) )
 			return true;
 		else
