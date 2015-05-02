@@ -2,9 +2,9 @@ package commandsListWindow;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import edu.iis.powp.command.IPlotterCommand;
-
 public class CategoryTreeNode extends DefaultMutableTreeNode {
+
+	private static final long serialVersionUID = 1L;
 
 	public CategoryTreeNode() {
 		super();

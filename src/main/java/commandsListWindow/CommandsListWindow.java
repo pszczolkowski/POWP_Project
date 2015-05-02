@@ -39,8 +39,12 @@ import edu.iis.powp.app.Application;
 import edu.iis.powp.app.DriverManager;
 import edu.iis.powp.command.IPlotterCommand;
 import edu.iis.powp.command.SetPositionCommand;
+import eventNotifier.CommandsListChangedEvent;
+import eventNotifier.Event;
+import eventNotifier.EventService;
+import eventNotifier.Subscriber;
 
-public class CommandsListWindow extends JFrame implements TreeSelectionListener, ActionListener, ListSelectionListener, ChangeListener, DocumentListener {
+public class CommandsListWindow extends JFrame implements TreeSelectionListener, ActionListener, ListSelectionListener, ChangeListener, DocumentListener, Subscriber {
 
 	private static final long serialVersionUID = 1L;
 	private DefaultMutableTreeNode rootNode;
@@ -66,30 +70,31 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		store.add( "kolo" , new SetPositionCommand(0,0) , figures );
 		
 		initUI();
-		displayCommandsTree( rootNode , CommandStore.getInstance().getCategoryManager().getRootCategory() );
+		displayCommandsTree();
 		tree.expandRow(0);
+		
+		EventService.getInstance().subscribe( CommandsListChangedEvent.class , this );
+	}
+
+
+	private void displayCommandsTree() {
+		rootNode.removeAllChildren();
+		displayCommandsOfCategory( rootNode , CommandStore.getInstance().getCategoryManager().getRootCategory() );
 	}
 
 	
-	private void displayCommandsTree( DefaultMutableTreeNode node , CommandCategory category ) {
+	private void displayCommandsOfCategory( DefaultMutableTreeNode node , CommandCategory category ) {
 		CommandStore store = CommandStore.getInstance();
 		
-		List< String > names = store.getCommandsNamesOfCategory( category );
-		List<CommandCategory> subCategories = category.getSubcategories();
-		if( names.size() > 0 ){
-			for( String name : names ){
+		for( String name : store.getCommandsNamesOfCategory( category ) ){
 				node.add( new DefaultMutableTreeNode( name ) );
 			}
-		}else if( subCategories.size() == 0 ){
-			node.setAllowsChildren( true );
-			// TODO wyświetlanie jako folderu a nie liścia
-		}
 		
-		for( CommandCategory subCategory : subCategories ){
+		for( CommandCategory subCategory : category.getSubcategories() ){
 			DefaultMutableTreeNode subNode = new CategoryTreeNode( subCategory.getName() );
 			node.add( subNode );
 			
-			displayCommandsTree(subNode, subCategory);
+			displayCommandsOfCategory(subNode, subCategory);
 		}
 	}
 
@@ -230,6 +235,13 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 			foundCommands = store.getCommandsNamesLike( searchName );
 		
 		searchResultsList.setListData( foundCommands.toArray(new String[]{}) );
+	}
+
+	@Override
+	public void inform(Event event) {
+		if( event.getType() == CommandsListChangedEvent.class ){
+			displayCommandsTree();
+		}
 	}
 	
 }
