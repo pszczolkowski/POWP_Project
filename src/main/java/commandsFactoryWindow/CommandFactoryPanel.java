@@ -7,8 +7,12 @@ package commandsFactoryWindow;
 
 import commandsFactory.CommandAlreadyExistsException;
 import commandsFactory.CommandBuilder;
-import commandsFactory.CommandFactory;
+import commandsFactory.CommandCategory;
+import commandsFactory.CommandStore;
 import edu.iis.powp.command.IPlotterCommand;
+import eventNotifier.CommandAddedEvent;
+import eventNotifier.Event;
+import eventNotifier.EventService;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -17,7 +21,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -31,7 +34,7 @@ import static java.lang.Integer.MIN_VALUE;
 public class CommandFactoryPanel extends JPanel {
 
     CommandBuilder builder = new CommandBuilder();
-    CommandFactory factory = new CommandFactory();
+    //CommandFactory factory = new CommandFactory();
 
     private final JSpinner xPosition;
     private final JSpinner yPosition;
@@ -44,10 +47,11 @@ public class CommandFactoryPanel extends JPanel {
 
     private final JButton saveCommandButton;
     private final JButton resetButton;
-    private final JTextField commandName;
-    private final JTextField commandCategory;
+    private final JTextField commandNameField;
+    private final JTextField commandCategoryField;
 
-    private Map< String, IPlotterCommand> commandMap;
+    private List< String> commandList;
+    private CommandStore store = CommandStore.getInstance();
 
     private List< OnCommandAddedListener> listeners = new ArrayList<>();
 
@@ -55,17 +59,11 @@ public class CommandFactoryPanel extends JPanel {
         listeners.add( listener );
     }
 
-    private void commandAdded( String name, IPlotterCommand command ) {
-        for ( OnCommandAddedListener listener : listeners ) {
-            listener.onCommandAdded( name, command );
-        }
-    }
-
     public CommandFactoryPanel() {
         setBackground( Color.white );
         setLayout( new GridLayout( 3, 1 ) );
 
-        commandMap = factory.getAllWithNames();
+        commandList = store.getCommandsNames();
 
         JPanel newCommandPanel = new JPanel( new GridLayout( 2, 4 ) );
         xPosition = new JSpinner( new SpinnerNumberModel( 0, MIN_VALUE, MAX_VALUE, 1 ) );
@@ -90,10 +88,10 @@ public class CommandFactoryPanel extends JPanel {
                     tableModel.addRow( new Object[]{ selectedCommand, x, y } );
                     builder.drawLineTo( x, y );
                 } else {
-                    for ( String name : commandMap.keySet() ) {
+                    for ( String name : commandList ) {
                         if ( selectedCommand.equals( name ) ) {
                             tableModel.addRow( new Object[]{ selectedCommand, null, null } );
-                            builder.addCommand( commandMap.get( name ) );
+                            builder.addCommand( store.get( name ) );
                             break;
                         }
                     }
@@ -114,13 +112,13 @@ public class CommandFactoryPanel extends JPanel {
 
         JPanel inputPanel = new JPanel( new GridLayout( 2, 2 ) );
         JLabel nameLabel = new JLabel( "Command Name", SwingConstants.CENTER );
-        commandName = new JTextField();
+        commandNameField = new JTextField();
         JLabel categoryLabel = new JLabel( "Command Category", SwingConstants.CENTER );
-        commandCategory = new JTextField();
+        commandCategoryField = new JTextField();
         inputPanel.add( nameLabel );
-        inputPanel.add( commandName );
+        inputPanel.add( commandNameField );
         inputPanel.add( categoryLabel );
-        inputPanel.add( commandCategory );
+        inputPanel.add( commandCategoryField );
 
         JPanel buttonPanel = new JPanel( new GridLayout( 2, 1 ) );
         saveCommandButton = new JButton( "Save" );
@@ -128,15 +126,16 @@ public class CommandFactoryPanel extends JPanel {
 
             @Override
             public void actionPerformed( ActionEvent e ) {
-                String name = commandName.getText();
-                String category = commandCategory.getText();
-                if ( !( name.equals( "" ) || category.equals( "" ) ) ) {
+                String commandName = commandNameField.getText();
+                String categoryName = commandCategoryField.getText();
+                if ( !( commandName.equals( "" ) || categoryName.equals( "" ) ) ) {
                     try {
                         IPlotterCommand command = builder.build();
-                        factory.add( name, command, category );
-                        commandAdded( name, command );
-                        commandMap = factory.getAllWithNames();
-                        commandType.addItem( name );
+                        CommandCategory category = store.getCategoryManager().find( categoryName );
+                        store.add( commandName, command, category );
+                        Event event = new CommandAddedEvent( this, commandName, category );
+                        EventService.getInstance().publish( event );
+                        commandType.addItem( commandName );
                     } catch ( CommandAlreadyExistsException error ) {
                         JOptionPane.showMessageDialog( null, "Command Already Exists" );
                     }
@@ -188,10 +187,16 @@ public class CommandFactoryPanel extends JPanel {
     }
 
     private void clearInputs() {
-        commandCategory.setText( "" );
-        commandName.setText( "" );
+        commandCategoryField.setText( "" );
+        commandNameField.setText( "" );
         xPosition.setValue( 0 );
         yPosition.setValue( 0 );
+    }
+
+    private void addAllCommands() {
+        for ( String name : commandList ) {
+            commandType.addItem( name );
+        }
     }
 
     public interface OnCommandAddedListener {
@@ -199,9 +204,4 @@ public class CommandFactoryPanel extends JPanel {
         void onCommandAdded( String name, IPlotterCommand command );
     }
 
-    private void addAllCommands() {
-        for ( String name : commandMap.keySet() ) {
-            commandType.addItem( name );
-        }
-    }
 }
