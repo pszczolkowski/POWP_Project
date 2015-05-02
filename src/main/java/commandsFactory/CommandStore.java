@@ -15,6 +15,15 @@ import java.util.Map;
 
 import edu.iis.powp.command.IPlotterCommand;
 
+/**
+ * Magazyn służący do przechowywania poleceń plotera {@link IPlotterCommand}.
+ * Każde przechowywane polecenie posiada przyporządkowaną unikalną nazwę, dzięki
+ * której możliwe jest odwołanie się do danego polecenia. Polecenia pogrupowane
+ * są w kategorie, do zarządzania którymi służy zarządca kategorii
+ * {@link CategoryManager}. Magazyn posiada związanego ze sobą zarządcę
+ * kategorii. Zawartośc magazynu można wyeksportować do pliku oraz zaimportować
+ * zapisane wcześniej polecenia.
+ */
 public class CommandStore implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -30,6 +39,14 @@ public class CommandStore implements Serializable {
 		commands = new HashMap<>();
 	}
 
+	/**
+	 * Zwraca obiekt {@link CommandStore}. Może istnieć tylko jeden taki obiekt
+	 * dlatego konstruktor jest prywatny i tworzeniem obiektów zajmuje się
+	 * jedynie ta metoda.
+	 * 
+	 * @return istniejący obiekt lub nowy, jeżeli jeszcze żaden nie został
+	 *         utworzony
+	 */
 	public static CommandStore getInstance(){
 		if( instance == null )
 			instance = new CommandStore();
@@ -37,10 +54,40 @@ public class CommandStore implements Serializable {
 		return instance; 
 	}
 	
+	/**
+	 * Dodaje polecenie z podaną nazwą. Może istnieć tylko jedno polecenie z
+	 * daną nazwą. W przypadku próby dodania polecenia z istniejącą nazwą,
+	 * zostaje rzucony wyjątek {@link CommandAlreadyExistsException}. Przypisuje
+	 * polecenie do domyślnej kategorii .
+	 * 
+	 * @param name
+	 *            nazwa polecenia, po której będzie rozpoznawane
+	 * @param command
+	 *            polecenie do dodania do magazynu
+	 * @throws CommandAlreadyExistsException
+	 *             jeżeli polecenie o podanej nazwie już istnieje
+	 */
 	public void add( String name , IPlotterCommand command ){
 		add( name , command , categoryManager.getDefaultCategory() );
 	}
 	
+	/**
+	 * Dodaje polecenie z podaną nazwą. Może istnieć tylko jedno polecenie z
+	 * daną nazwą. W przypadku próby dodania polecenia z istniejącą nazwą,
+	 * zostaje rzucony wyjątek {@link CommandAlreadyExistsException}. Podana
+	 * kategoria musi istnieć w magazynie. .
+	 * 
+	 * @param name
+	 *            nazwa polecenia, po której będzie rozpoznawane
+	 * @param command
+	 *            polecenie do dodania do magazynu
+	 * @param category
+	 *            kategoria do której ma zostać przypisane polecenie
+	 * @throws CommandAlreadyExistsException
+	 *             jeżeli polecenie o podanej nazwie już istnieje
+	 * @throws CategoryDoesntExistException
+	 *             jeżeli podana kategoria nie istnieje w magazynie
+	 */
 	public void add( String name , IPlotterCommand command , CommandCategory category ){
 		if( command == null )
 			throw new IllegalArgumentException( "command cannot be null" );
@@ -60,6 +107,17 @@ public class CommandStore implements Serializable {
 		categoryCommands.put( name , command );
 	}
 
+	/**
+	 * Pobiera polecenie o podanej nazwie z magazynu. Polecenie pobierane jest
+	 * niezależnie od kategorii, do której zostało przypisane. Jeżeli polecenie
+	 * nie istnieje zwraca null. Zwrócone polecenie jest kopią przechowywanego,
+	 * dzięki czemu dokonane na nim zmiany nie mają wpływu na polecenia wewnątrz
+	 * magazynu.
+	 * 
+	 * @param commandName
+	 *            nazwa polecenia do pobrania
+	 * @return
+	 */
 	public IPlotterCommand get( String commandName ){
 		IPlotterCommand foundCommand = null;
 		
@@ -78,7 +136,15 @@ public class CommandStore implements Serializable {
 		return foundCommand;
 	}
 	
-	public List< IPlotterCommand > getNamedLike( String nameLike ){
+	/**
+	 * Pobiera listę poleceń, których nazwy zawierają podany ciąg znaków.
+	 * Polecenia pobierane są niezależnie od kategorii, do których zostały
+	 * przypisane.
+	 * 
+	 * @param nameLike
+	 *            ciąg znaków do wyszukania w nazwach poleceń
+	 * @return lista poleceń, których nazwy zawierają podany ciąg znaków
+	 */
 	public List< IPlotterCommand > getCommandsNamedLike( String nameLike ){
 		List< IPlotterCommand > foundCommands = new ArrayList<>();
 		
@@ -95,6 +161,16 @@ public class CommandStore implements Serializable {
 		return foundCommands;
 	}
 	
+	/**
+	 * Pobiera listę poleceń przypisaną do podanej kategorii. Lista zawiera
+	 * kopie przechowywanych poleceń
+	 * 
+	 * @param category
+	 *            kategoria, której polecenia mają zostać pobrane
+	 * @return lista poleceń przypisanych do podanej kategorii
+	 * @throws CategoryDoesntExistException
+	 *             jeżeli podana kategoria nie istnieje w magazynie
+	 */
 	public List< IPlotterCommand > getCommandsOfCategory( CommandCategory category ){
 		if( ! categoryManager.contains( category ) )
 			throw new CategoryDoesntExistException( "category " + category.getName() + " doesn't exist" );
@@ -113,6 +189,12 @@ public class CommandStore implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * Pobiera nazwy wszystkich przechowywnych poleceń, niezależnie od kategorii
+	 * w jakich się znajdują. Dana nazwa występuje tylko raz.
+	 * 
+	 * @return lista nazw przechowywanych poleceń
+	 */
 	public List< String > getCommandsNames(){
 		List< String > names = new ArrayList<>();
 		
@@ -123,6 +205,16 @@ public class CommandStore implements Serializable {
 		return names;
 	}
 	
+	/**
+	 * Pobiera listę nazw poleceń przypisanych do podanej kategorii. Dana nazwa
+	 * występuje tylko raz.
+	 * 
+	 * @param category
+	 *            kategoria, której nazwy poleceń mają zostać pobrane
+	 * @return lista nazw poleceń przypisanych do podanej kategorii
+	 * @throws CategoryDoesntExistException
+	 *             jeżeli podana kategoria nie istnieje
+	 */
 	public List< String > getCommandsNamesOfCategory( CommandCategory category ){
 		if( ! categoryManager.contains( category ) )
 			throw new CategoryDoesntExistException( "category " + category.getName() + " doeasn't exist" );
@@ -136,6 +228,15 @@ public class CommandStore implements Serializable {
 		return names;
 	}
 	
+	/**
+	 * Pobiera listę nazw przechowywanych poleceń, które zawierają podany ciąg
+	 * znaków. Nazwy poleceń pobierane są niezależnie od kategorii, do jakiej
+	 * przypisane są polecenia. Dana nazwa występuje tylko raz.
+	 * 
+	 * @param nameLike
+	 *            ciąg znaków do wyszukania w nazwach poleceń
+	 * @return lista nazw poleceń zawierających podany ciąg znaków
+	 */
 	public List< String > getCommandsNamesLike( String nameLike ){
 		List< String > foundNAmes = new ArrayList<>();
 		
@@ -150,19 +251,48 @@ public class CommandStore implements Serializable {
 		return foundNAmes;
 	}
 	
+	/**
+	 * Sprawdza czy w magazynie znajduje się polecenie o podanej nazwie. Może
+	 * istnieć tylko jedno polecenie o podanej nazwie.
+	 * 
+	 * @param commandName
+	 *            nazwa polecenia do sprawdzenia
+	 * @return true jeżeli polecenie o podanej nazwie istnieje, fale jeżeli nie
+	 *         istnieje
+	 */
 	public boolean contains( String commandName ){
 		return get( commandName ) != null;
 	}
 
+	/**
+	 * Pobiera zarządcę kategorii {@link CategoryManager}, związanego z
+	 * magazynem.
+	 * 
+	 * @return zarządca kategorii
+	 */
 	public CategoryManager getCategoryManager() {
 		return categoryManager;
 	}
 	
+	/**
+	 * Czyści magazyn - usuwa wszystkie przechowywane polecenia oraz kategorie.
+	 * Jest to niedowracalna operacja. Czyszczenie powinno być wykonywane
+	 * jedynie w koniecznych sytuacjach, najlepiej po uprzednim wyeksportowaniu
+	 * przechowywanych poleceń do pliku.
+	 */
 	public void clear(){
 		categoryManager.clear();
 		commands.clear();
 	}
 	
+	/**
+	 * Eksportuje przechowywane polecenia do pliku o podanej nazwie. Jeżeli plik
+	 * z poleceniami o podanej nazwie już istnieje, zostaje nadpisany.
+	 * 
+	 * @param fileName
+	 *            nazwa pliku, do którego zostaną wyeksportowane przechowywane
+	 *            polecenia
+	 */
 	public void exportToFile( String fileName ){
 		File folder = new File( COMMANDS_PARENT_PATH );
 		folder.mkdirs();
@@ -174,6 +304,15 @@ public class CommandStore implements Serializable {
 		}
 	}
 	
+	/**
+	 * Importuje zestaw poleceń z pliku o podanej nazwie. Obecnie przechowywane
+	 * polecenia oraz kategorie zostają bezpowrotnie utracone.
+	 * 
+	 * @param fileName
+	 *            nazwa pliku, z którego zostaną zaimportowane polecenia
+	 * @throws FileNotFoundException
+	 *             jeżeli plik o podanej nazwie nie istnieje
+	 */
 	public void importFromFile( String fileName ) throws FileNotFoundException {		
 		try( ObjectInputStream in = new ObjectInputStream( new FileInputStream( new File( COMMANDS_PARENT_PATH , fileName ) ) ) ) {
 			CommandStore readStore = (CommandStore) in.readObject();
