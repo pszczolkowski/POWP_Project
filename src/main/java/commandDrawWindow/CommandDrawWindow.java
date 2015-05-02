@@ -34,11 +34,13 @@ public class CommandDrawWindow extends JFrame {
     }
 
     private void initUI() {
-        
+
         JTabbedPane tabbedMenu = new JTabbedPane();
         drawingPanel = new DrawerPanel();
+        formPanel = new FormPanel();
         tabbedMenu.add( "Drawer", drawingPanel );
-        tabbedMenu.add( "Form", formPanel);
+        tabbedMenu.add( "Form", formPanel );
+
         add( tabbedMenu );
     }
 
