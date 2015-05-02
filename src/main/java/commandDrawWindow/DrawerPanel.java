@@ -43,7 +43,6 @@ public class DrawerPanel extends JPanel {
 
                     @Override
                     public void mousePressed( MouseEvent e ) {
-                        System.out.println( draw + " " + preset );
                         if ( !draw || startPoint == null ) {
                             startPoint = new Point( e.getX(), e.getY() );
                         } else {
@@ -139,11 +138,14 @@ public class DrawerPanel extends JPanel {
 
     void setPosition( int x, int y ) {
         startPoint = new Point( x, y );
-        repaint();
+        builder.setPosition( x, y );
     }
 
     void drawLine( int x, int y ) {
         endPoint = new Point( x, y );
+        lines.add( new Line( startPoint, endPoint ) );
+        builder.drawLineTo( x, y );
+        startPoint = endPoint;
         repaint();
     }
 
