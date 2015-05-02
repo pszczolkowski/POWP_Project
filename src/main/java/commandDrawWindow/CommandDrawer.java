@@ -26,6 +26,7 @@ public class CommandDrawer extends JPanel {
     private Point endPoint;
     private boolean draw = false;
     private boolean preset = true;
+    private boolean mouseInWindow = false;
     private final List<Line> lines = new ArrayList<>();
     private CommandBuilder builder;
 
@@ -58,10 +59,14 @@ public class CommandDrawer extends JPanel {
 
                     @Override
                     public void mouseEntered( MouseEvent e ) {
+                        mouseInWindow = true;
+                        repaint();
                     }
 
                     @Override
                     public void mouseExited( MouseEvent e ) {
+                        mouseInWindow = false;
+                        repaint();
                     }
                 } );
         this.addMouseMotionListener(
@@ -94,7 +99,7 @@ public class CommandDrawer extends JPanel {
 //        g.setRenderingHints( rh );
         g.setColor( Color.red );
         if ( startPoint != null ) {
-            if ( draw ) {
+            if ( draw && mouseInWindow ) {
                 if ( !preset ) {
                     lines.add( new Line( startPoint, endPoint ) );
                     builder.drawLineTo( endPoint.x, endPoint.y );
@@ -126,13 +131,9 @@ public class CommandDrawer extends JPanel {
         return builder;
     }
 
-    public void newBuilder() {
-        this.builder = new CommandBuilder();
-    }
-
     public void clear() {
         lines.clear();
-        newBuilder();
+        builder = new CommandBuilder();
         repaint();
     }
 

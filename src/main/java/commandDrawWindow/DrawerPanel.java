@@ -118,7 +118,8 @@ public class DrawerPanel extends JPanel {
                 store.add( name, command, category );
                 Event event = new CommandAddedEvent( this, name, category );
                 EventService.getInstance().publish( event );
-                drawer.newBuilder();
+                drawer.clear();
+                setPositionButton.doClick();
                 loadAllCommandNames();
             }
         } );
