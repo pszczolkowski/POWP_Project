@@ -8,9 +8,11 @@ package commandDrawWindow;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
 import edu.iis.powp.command.IPlotterCommand;
+import eventNotifier.CategoryListChangedEvent;
 import eventNotifier.CommandAddedEvent;
 import eventNotifier.Event;
 import eventNotifier.EventService;
+import eventNotifier.Subscriber;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -23,7 +25,7 @@ import javax.swing.*;
  * @author Godzio
  */
 // TODO disable przycisku load Command jesli na liscie nie ma nic
-public class DrawerPanel extends JPanel {
+public class DrawerPanel extends JPanel implements Subscriber {
 
     private final JRadioButton setPositionButton = new JRadioButton( "Set Position" );
     private final JRadioButton drawLineButton = new JRadioButton( "Draw Line" );
@@ -34,17 +36,21 @@ public class DrawerPanel extends JPanel {
     private final JComboBox commandCategory = new JComboBox();
     private final JButton saveButton = new JButton( "Save Command" );
     private final JButton useCommandButton = new JButton( "Use Command" );
-    private final JList commandsList;
-    private final DefaultListModel listModel;
-    private final CommandStore store;
+    private JList commandsList;
+    private DefaultListModel listModel;
+    private CommandStore store;
 
     private final CommandDrawer drawer = new CommandDrawer();
-
-    ;
 
     public DrawerPanel() {
         super();
         store = CommandStore.getInstance();
+        initUI();
+
+        EventService.getInstance().subscribe( CategoryListChangedEvent.class, this );
+    }
+
+    private void initUI() {
         setLayout( new BorderLayout() );
 
         JPanel inputs = new JPanel( new GridLayout( 8, 1, 2, 2 ) );
@@ -80,7 +86,6 @@ public class DrawerPanel extends JPanel {
 
         this.add( sidePanel, BorderLayout.EAST );
         this.add( drawer );
-
     }
 
     private void setListeners() {
@@ -144,10 +149,18 @@ public class DrawerPanel extends JPanel {
     }
 
     private void loadAllCategories() {
+        commandCategory.removeAllItems();
         List<CommandCategory> categories = store.getCategoryManager().getRootCategory().getAllSubcategories();
         for ( CommandCategory category : categories ) {
             commandCategory.addItem( category.getName() );
 
+        }
+    }
+
+    @Override
+    public void inform( Event event ) {
+        if ( event.getType() == CategoryListChangedEvent.class ) {
+            loadAllCategories();
         }
     }
 }
