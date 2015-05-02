@@ -29,11 +29,14 @@ public class CommandDrawer extends JPanel {
     private boolean mouseInWindow = false;
     private final List<Line> lines = new ArrayList<>();
     private CommandBuilder builder;
+    int halfOfPanelWidth;
+    int halfOfPanelHeigth;
 
     public CommandDrawer() {
         builder = new CommandBuilder();
         this.setBackground( Color.white );
-
+        halfOfPanelWidth = getWidth() / 2;
+        halfOfPanelHeigth = getHeight() / 2;
         this.addMouseListener(
                 new MouseListener() {
 
@@ -92,17 +95,15 @@ public class CommandDrawer extends JPanel {
     @Override
     public void paint( Graphics g ) {
         super.paint( g );
-//        RenderingHints rh = new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-//        rh.put( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-//
-//        Graphics2D g = (Graphics2D) g;
-//        g.setRenderingHints( rh );
+        halfOfPanelWidth = getWidth() / 2;
+        halfOfPanelHeigth = getHeight() / 2;
         g.setColor( Color.red );
+
         if ( startPoint != null ) {
             if ( draw && mouseInWindow ) {
                 if ( !preset ) {
                     lines.add( new Line( startPoint, endPoint ) );
-                    builder.drawLineTo( endPoint.x, endPoint.y );
+                    builder.drawLineTo( endPoint.x - halfOfPanelWidth, endPoint.y - halfOfPanelHeigth );
                     startPoint = endPoint;
                 } else {
                     g.drawLine( startPoint.x, startPoint.y, endPoint.x, endPoint.y );
@@ -114,7 +115,7 @@ public class CommandDrawer extends JPanel {
             } else {
                 endPoint = startPoint;
                 g.drawOval( endPoint.x, endPoint.y, 5, 5 );
-                builder.setPosition( endPoint.x, endPoint.y );
+                builder.setPosition( endPoint.x - halfOfPanelWidth, endPoint.y - halfOfPanelHeigth );
                 for ( Line line : lines ) {
                     g.drawLine( line.startPoint.x, line.startPoint.y, line.endPoint.x, line.endPoint.y );
                 }
@@ -138,12 +139,16 @@ public class CommandDrawer extends JPanel {
     }
 
     void setPosition( int x, int y ) {
-        startPoint = new Point( x, y );
+        halfOfPanelWidth = getWidth() / 2;
+        halfOfPanelHeigth = getHeight() / 2;
+        startPoint = new Point( x + halfOfPanelWidth, y + halfOfPanelHeigth );
         builder.setPosition( x, y );
     }
 
     void drawLine( int x, int y ) {
-        endPoint = new Point( x, y );
+        halfOfPanelWidth = getWidth() / 2;
+        halfOfPanelHeigth = getHeight() / 2;
+        endPoint = new Point( x + halfOfPanelWidth, y + halfOfPanelHeigth );
         lines.add( new Line( startPoint, endPoint ) );
         builder.drawLineTo( x, y );
         startPoint = endPoint;
