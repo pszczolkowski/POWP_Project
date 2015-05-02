@@ -8,11 +8,8 @@ import edu.iis.powp.command.IPlotterCommand;
 import edu.iis.powp.command.SetPositionCommand;
 
 /**
- * Służy do budowania złożonych poleceń {@link CompoundCommand}. Kolejne polecenia
- * dodaje się używając metod: setPosition, drawLineTo oraz addCommand.
- * Po zaprojektowaniu listy kolejno wykonywanych poleceń, należy użyć 
- * metody build, aby utworzyć obiekt {@link CompoundCommand}
- *
+ * Służy do budowania złożonych poleceń plotera {@link CompoundCommand}. JEst to
+ * implementacja wzorca projektowego Builder.
  */
 public class CommandBuilder {
 	
@@ -20,6 +17,7 @@ public class CommandBuilder {
 
 	/**
 	 * Dodaje polecenie zmiany pozycji plotera do listy poleceń
+	 * 
 	 * @param x
 	 * @param y
 	 */
@@ -30,6 +28,7 @@ public class CommandBuilder {
 	
 	/**
 	 * Dodanie polecenie narysowania linii do listy poleceń
+	 * 
 	 * @param x
 	 * @param y
 	 */
@@ -39,10 +38,11 @@ public class CommandBuilder {
 	}
 	
 	/**
-	 * Dodaje istniejące złożone polecenie do listy poleceń. 
-	 * Poprzez tę metodę można rozbudowywać istniejące polecenia.
-	 * @param command istniejące polecenie
-	 * @return
+	 * Dodaje istniejące złożone polecenie do listy poleceń. Poprzez tę metodę
+	 * można rozbudowywać istniejące polecenia.
+	 * 
+	 * @param command
+	 *            istniejące polecenie
 	 */
 	public CommandBuilder addCommand( IPlotterCommand command ){
 		commands.add( command );
@@ -50,8 +50,9 @@ public class CommandBuilder {
 	}
 	
 	/**
-	 * Tworzy obiekt złożonego polecenia {@link CompoundCommand} na podstawie dodanych
-	 * do listy poleceń 
+	 * Tworzy obiekt złożonego polecenia {@link CompoundCommand} na podstawie
+	 * dodanych wcześniej poleceń.
+	 * 
 	 * @return utworzone złożone polecenie {@link CompoundCommand}
 	 */
 	public CompoundCommand build(){
