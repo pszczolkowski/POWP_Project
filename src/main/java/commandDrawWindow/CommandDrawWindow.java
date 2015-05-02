@@ -13,7 +13,7 @@ import javax.swing.*;
  */
 public class CommandDrawWindow extends JFrame {
 
-    private ComandPanel commandPanel;
+    private DrawerPanel drawingPanel;
 
     public CommandDrawWindow() {
         super();
@@ -33,8 +33,8 @@ public class CommandDrawWindow extends JFrame {
     }
 
     private void initUI() {
-        commandPanel = new ComandPanel();
-        add( commandPanel );
+        drawingPanel = new DrawerPanel();
+        add( drawingPanel );
     }
 
 }

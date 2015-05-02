@@ -13,9 +13,9 @@ import edu.iis.client.plottermagic.IPlotter;
  */
 public class CommandDrawPlotterAdapter implements IPlotter {
 
-    private final DrawerPanel drawer;
+    private final CommandDrawer drawer;
 
-    public CommandDrawPlotterAdapter( DrawerPanel drawer ) {
+    public CommandDrawPlotterAdapter( CommandDrawer drawer ) {
         this.drawer = drawer;
     }
 

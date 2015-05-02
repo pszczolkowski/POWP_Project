@@ -5,148 +5,148 @@
  */
 package commandDrawWindow;
 
-import commandsFactory.CommandBuilder;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
+import commandsFactory.CommandCategory;
+import commandsFactory.CommandStore;
+import edu.iis.powp.command.IPlotterCommand;
+import eventNotifier.CommandAddedEvent;
+import eventNotifier.Event;
+import eventNotifier.EventService;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 /**
  *
  * @author Godzio
  */
+// TODO disable przycisku load Command jesli na liscie nie ma nic
 public class DrawerPanel extends JPanel {
 
-    private Point startPoint;
-    private Point endPoint;
-    private boolean draw = false;
-    private boolean preset = true;
-    private final List<Line> lines = new ArrayList<>();
-    private CommandBuilder builder;
+    private final JRadioButton setPositionButton = new JRadioButton( "Set Position" );
+    private final JRadioButton drawLineButton = new JRadioButton( "Draw Line" );
+    private final JButton clearButton = new JButton( "Clear Panel" );
+    private final JLabel commandNameLabel = new JLabel( "Command name" );
+    private final JLabel commandCategoryLabel = new JLabel( "Command category" );
+    private final JTextField commandName = new JTextField();
+    private final JComboBox commandCategory = new JComboBox();
+    private final JButton saveButton = new JButton( "Save Command" );
+    private final JButton useCommandButton = new JButton( "Use Command" );
+    private final JList commandsList;
+    private final DefaultListModel listModel;
+    private final CommandStore store;
+
+    private final CommandDrawer drawer = new CommandDrawer();
+
+    ;
 
     public DrawerPanel() {
-        builder = new CommandBuilder();
-        this.setBackground( Color.white );
+        super();
+        store = CommandStore.getInstance();
+        setLayout( new BorderLayout() );
 
-        this.addMouseListener(
-                new MouseListener() {
+        JPanel inputs = new JPanel( new GridLayout( 8, 1, 2, 2 ) );
+        ButtonGroup group = new ButtonGroup();
+        group.add( setPositionButton );
+        inputs.add( setPositionButton );
+        setPositionButton.setSelected( true );
+        group.add( drawLineButton );
+        inputs.add( drawLineButton );
+        inputs.add( clearButton );
+        inputs.add( commandNameLabel );
+        inputs.add( commandName );
+        inputs.add( commandCategoryLabel );
+        inputs.add( commandCategory );
+        inputs.add( saveButton );
 
-                    @Override
-                    public void mouseClicked( MouseEvent e ) {
+        JPanel commandListPanel = new JPanel( new GridLayout( 1, 1 ) );
+        listModel = new DefaultListModel();
+        loadAllCommandNames();
+        commandsList = new JList( listModel );
+        commandListPanel.add( commandsList );
+        JScrollPane scrollPane = new JScrollPane( commandListPanel );
 
-                    }
+        loadAllCategories();
+        JPanel sidePanel = new JPanel();
+        sidePanel.setLayout( new BoxLayout( sidePanel, BoxLayout.Y_AXIS ) );
+        sidePanel.add( inputs );
+        sidePanel.add( new JLabel( "Commands" ) );
+        sidePanel.add( scrollPane );
+        sidePanel.add( useCommandButton );
 
-                    @Override
-                    public void mousePressed( MouseEvent e ) {
-                        if ( !draw || startPoint == null ) {
-                            startPoint = new Point( e.getX(), e.getY() );
-                        } else {
-                            endPoint = new Point( e.getX(), e.getY() );
-                        }
-                        preset = false;
-                        repaint();
-                    }
+        setListeners();
 
-                    @Override
-                    public void mouseReleased( MouseEvent e ) {
-                    }
+        this.add( sidePanel, BorderLayout.EAST );
+        this.add( drawer );
 
-                    @Override
-                    public void mouseEntered( MouseEvent e ) {
-                    }
-
-                    @Override
-                    public void mouseExited( MouseEvent e ) {
-                    }
-                } );
-        this.addMouseMotionListener(
-                new MouseMotionListener() {
-
-                    @Override
-                    public void mouseDragged( MouseEvent e ) {
-
-                    }
-
-                    @Override
-                    public void mouseMoved( MouseEvent e ) {
-                        if ( draw ) {
-                            preset = true;
-                            endPoint = new Point( e.getX(), e.getY() );
-                            repaint();
-                        }
-                    }
-                }
-        );
     }
 
-    @Override
-    public void paint( Graphics g ) {
-        super.paint( g );
-//        RenderingHints rh = new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-//        rh.put( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-//
-//        Graphics2D g = (Graphics2D) g;
-//        g.setRenderingHints( rh );
-        g.setColor( Color.red );
-        if ( startPoint != null ) {
-            if ( draw ) {
-                if ( !preset ) {
-                    lines.add( new Line( startPoint, endPoint ) );
-                    builder.drawLineTo( endPoint.x, endPoint.y );
-                    startPoint = endPoint;
-                } else {
-                    g.drawLine( startPoint.x, startPoint.y, endPoint.x, endPoint.y );
-                }
-                for ( Line line : lines ) {
-                    g.drawLine( line.startPoint.x, line.startPoint.y, line.endPoint.x, line.endPoint.y );
-                }
+    private void setListeners() {
 
-            } else {
-                endPoint = startPoint;
-                g.drawOval( endPoint.x, endPoint.y, 5, 5 );
-                builder.setPosition( endPoint.x, endPoint.y );
-                for ( Line line : lines ) {
-                    g.drawLine( line.startPoint.x, line.startPoint.y, line.endPoint.x, line.endPoint.y );
-                }
+        setPositionButton.addActionListener( new ActionListener() {
+
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                drawer.setDraw( false );
             }
+        } );
+        drawLineButton.addActionListener( new ActionListener() {
+
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                drawer.setDraw( true );
+            }
+        } );
+        clearButton.addActionListener( new ActionListener() {
+
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                drawer.clear();
+            }
+        } );
+        saveButton.addActionListener( new ActionListener() {
+
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                IPlotterCommand command = drawer.getBuilder().build();
+                String name = commandName.getText();
+                String categoryName = commandCategory.getSelectedItem().toString();
+                CommandCategory category = store.getCategoryManager().find( categoryName );
+
+                store.add( name, command, category );
+                Event event = new CommandAddedEvent( this, name, category );
+                EventService.getInstance().publish( event );
+                drawer.newBuilder();
+                loadAllCommandNames();
+            }
+        } );
+        useCommandButton.addActionListener( new ActionListener() {
+
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                String commandName = commandsList.getSelectedValue().toString();
+                IPlotterCommand command = store.get( commandName );
+                command.execute( new CommandDrawPlotterAdapter( drawer ) );
+            }
+        } );
+
+    }
+
+    private void loadAllCommandNames() {
+        List<String> commands = store.getCommandsNames();
+        listModel.clear();
+        for ( String command : commands ) {
+            listModel.addElement( command );
         }
-        preset = true;
     }
 
-    public void setDraw( boolean draw ) {
-        this.draw = draw;
-    }
+    private void loadAllCategories() {
+        List<CommandCategory> categories = store.getCategoryManager().getRootCategory().getAllSubcategories();
+        for ( CommandCategory category : categories ) {
+            commandCategory.addItem( category.getName() );
 
-    public CommandBuilder getBuilder() {
-        return builder;
+        }
     }
-
-    public void newBuilder() {
-        this.builder = new CommandBuilder();
-    }
-
-    public void clear() {
-        lines.clear();
-        newBuilder();
-        repaint();
-    }
-
-    void setPosition( int x, int y ) {
-        startPoint = new Point( x, y );
-        builder.setPosition( x, y );
-    }
-
-    void drawLine( int x, int y ) {
-        endPoint = new Point( x, y );
-        lines.add( new Line( startPoint, endPoint ) );
-        builder.drawLineTo( x, y );
-        startPoint = endPoint;
-        repaint();
-    }
-
 }
