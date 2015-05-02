@@ -27,8 +27,12 @@ public class CategoryManager implements Serializable {
 			throw new CategoryAlreadyExistsException( "category " + name + " already exists" );
 		
 		CommandCategory createdCategory = new CommandCategory( name );
-		if( parent != null )
+		if( parent != null ){
+			if( ! contains( parent ) )
+				throw new CategoryDoesntExistException( "parent category " + parent.getName() + " doeasn't exist" );
+				
 			parent.addSubcategory( createdCategory );
+		}
 		else
 			rootCategory.addSubcategory( createdCategory );
 		
