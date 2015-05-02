@@ -14,10 +14,11 @@ import javax.swing.*;
 public class CommandDrawWindow extends JFrame {
 
     private DrawerPanel drawingPanel;
+    private FormPanel formPanel;
 
     public CommandDrawWindow() {
         super();
-        setTitle( "Command Draw" );
+        setTitle( "Command Drawer" );
         setSize( 600, 600 );
         setResizable( true );
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -33,8 +34,12 @@ public class CommandDrawWindow extends JFrame {
     }
 
     private void initUI() {
+        
+        JTabbedPane tabbedMenu = new JTabbedPane();
         drawingPanel = new DrawerPanel();
-        add( drawingPanel );
+        tabbedMenu.add( "Drawer", drawingPanel );
+        tabbedMenu.add( "Form", formPanel);
+        add( tabbedMenu );
     }
 
 }
