@@ -45,7 +45,7 @@ public class DrawerPanel extends JPanel implements Subscriber {
 
         EventService.getInstance().subscribe( CategoryListChangedEvent.class, this );
         EventService.getInstance().subscribe( CommandsListChangedEvent.class, this );
-
+        EventService.getInstance().subscribe( CommandAddedEvent.class, this );
     }
 
     private void initUI() {
@@ -159,7 +159,7 @@ public class DrawerPanel extends JPanel implements Subscriber {
     public void inform( Event event ) {
         if ( event.getType() == CategoryListChangedEvent.class ) {
             loadAllCategories();
-        } else if ( event.getType() == CommandsListChangedEvent.class ) {
+        } else if ( event.getType() == CommandsListChangedEvent.class || event.getType() == CommandAddedEvent.class ) {
             loadAllCommandNames();
         }
     }
