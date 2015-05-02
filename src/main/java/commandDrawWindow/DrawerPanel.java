@@ -8,11 +8,7 @@ package commandDrawWindow;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
 import edu.iis.powp.command.IPlotterCommand;
-import eventNotifier.CategoryListChangedEvent;
-import eventNotifier.CommandAddedEvent;
-import eventNotifier.Event;
-import eventNotifier.EventService;
-import eventNotifier.Subscriber;
+import eventNotifier.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -48,6 +44,8 @@ public class DrawerPanel extends JPanel implements Subscriber {
         initUI();
 
         EventService.getInstance().subscribe( CategoryListChangedEvent.class, this );
+        EventService.getInstance().subscribe( CommandsListChangedEvent.class, this );
+
     }
 
     private void initUI() {
@@ -161,6 +159,8 @@ public class DrawerPanel extends JPanel implements Subscriber {
     public void inform( Event event ) {
         if ( event.getType() == CategoryListChangedEvent.class ) {
             loadAllCategories();
+        } else if ( event.getType() == CommandsListChangedEvent.class ) {
+            loadAllCommandNames();
         }
     }
 }
