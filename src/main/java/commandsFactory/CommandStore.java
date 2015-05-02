@@ -79,6 +79,7 @@ public class CommandStore implements Serializable {
 	}
 	
 	public List< IPlotterCommand > getNamedLike( String nameLike ){
+	public List< IPlotterCommand > getCommandsNamedLike( String nameLike ){
 		List< IPlotterCommand > foundCommands = new ArrayList<>();
 		
 		try {

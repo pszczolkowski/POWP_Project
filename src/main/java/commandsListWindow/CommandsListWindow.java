@@ -131,8 +131,7 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		setTitle( "Commands" );
 		setSize( new Dimension( 210 , 400 ) );
 		setMinimumSize( new Dimension( 210 , 300 ) );
-		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		
+		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );		
 		setResizable( true );
 		
 		tabbedPane = new JTabbedPane();
