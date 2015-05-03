@@ -91,27 +91,6 @@ public class TestPlotSoftPatterns {
         Application.getComponent( CommandsListWindow.class ).setVisible( true );
     }
 
-    /**
-     * ======= private static void setupCommandsListWindow( Context context ) {
-     * Application.addComponent( CommandsListWindow.class );
-     * context.addComponentMenu( CommandsListWindow.class, "Commands list", 3 );
-     * context.addComponentMenuElement( CommandsListWindow.class, "visible", new
-     * ActionListener() {
-     *
-     * @Override public void actionPerformed( ActionEvent e ) {
-     * CommandsListWindow window = Application.getComponent(
-     * CommandsListWindow.class ); if ( window.isVisible() ) {
-     * window.setVisible( false ); } else { window.setVisible( true ); } } },
-     * true );
-     *
-     * Application.getComponent( CommandsListWindow.class ).setVisible( true );
-     * }
-     *
-     * /**
-     * >>>>>>> Stashed changes Sets plotter simulators
-     *
-     * @param context Application context.
-     */
     private static void setupDrivers( Context context ) {
 
         IPlotter plotter = new LineAdapterPlotterDriver( new BasicLine(), "basic" );
