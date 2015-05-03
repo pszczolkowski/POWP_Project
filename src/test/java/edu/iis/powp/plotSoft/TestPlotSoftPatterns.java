@@ -2,8 +2,6 @@ package edu.iis.powp.plotSoft;
 
 import commandsFactory.CommandFactory;
 import commandsFactory.CommandStore;
-import commandsFactoryWindow.CommandFactoryPanel;
-import commandsFactoryWindow.CommandFactoryWindow;
 import commandsListWindow.CommandsListWindow;
 import edu.iis.client.plottermagic.IPlotter;
 import edu.iis.client.plottermagic.preset.FiguresJoe;
@@ -28,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
 
-import static commandsFactoryWindow.CommandFactoryWindowSetup.setupCommandFactoryWindow;
-
 public class TestPlotSoftPatterns {
 
     /**
@@ -41,15 +37,6 @@ public class TestPlotSoftPatterns {
         final Context context = Application.getComponent( Context.class );
 
         setupCommandsListWindow( context );
-
-        setupCommandFactoryWindow( context );
-        CommandFactoryWindow.getPanel().addOnCommandAddedListener( new CommandFactoryPanel.OnCommandAddedListener() {
-
-            @Override
-            public void onCommandAdded( String name, IPlotterCommand command ) {
-                setupTest( context, name, command );
-            }
-        } );
 
         setupDrivers( context );
 
