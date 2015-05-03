@@ -38,6 +38,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
+import commandsFactory.CategoryManager;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
 
@@ -65,8 +66,9 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 	private JTabbedPane tabbedPane;
 	private JTextField searchField;
 	private DefaultTreeModel treeModel;
-	private JPopupMenu popupMenu;
+	private JPopupMenu categoryPopupMenu;
 	private JMenuItem addSubcategoryMenuItem;
+	private JMenuItem deleteCategoryMenuItem;
 	
 	public CommandsListWindow() {
 		super();
@@ -144,10 +146,13 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		tree.addMouseListener( mouseListener );
 		allPanel.add( tree , BorderLayout.CENTER );
 		
-		popupMenu = new JPopupMenu();
+		categoryPopupMenu = new JPopupMenu();
 		addSubcategoryMenuItem = new JMenuItem( "add subcategory" );
 		addSubcategoryMenuItem.addMouseListener( mouseListener );
-		popupMenu.add( addSubcategoryMenuItem );
+		deleteCategoryMenuItem = new JMenuItem( "delete" );
+		deleteCategoryMenuItem.addMouseListener( mouseListener );
+		categoryPopupMenu.add( addSubcategoryMenuItem );
+		categoryPopupMenu.add( deleteCategoryMenuItem );
 		
 		// SEARCH PANEL
 		JPanel searchPanel = new JPanel();
@@ -310,7 +315,7 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		        
 		        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 		        if( ! node.isLeaf() ){
-		        	popupMenu.show(e.getComponent(), e.getX(), e.getY());
+		        	categoryPopupMenu.show(e.getComponent(), e.getX(), e.getY());
 		        }
 			}else if( e.getSource() == addSubcategoryMenuItem ){
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
@@ -319,6 +324,13 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 				}else{
 					CommandCategory parentCategory = store.getCategoryManager().find( (String) node.getUserObject() );
 					addSubcategory(parentCategory);
+				}
+			}else if( e.getSource() == deleteCategoryMenuItem ){
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				if( node.isLeaf() ){
+					JOptionPane.showMessageDialog( CommandsListWindow.this , "No category selected" );
+				}else{
+					deleteCategory( (String) node.getUserObject() );
 				}
 			}
 			
@@ -341,6 +353,30 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 			Event event = new CategoryListEvent( this );
 			EventService.getInstance().publish(event);
 		}
+	}
+	
+	private void deleteCategory( String categoryName ){
+		CategoryManager categoryManager = store.getCategoryManager();
+		
+		int answer = JOptionPane.showConfirmDialog( CommandsListWindow.this , "Are you sure you want to delete category " + categoryName + "?" , "Delete category" , JOptionPane.YES_NO_OPTION);
+		if( answer == 1 )
+			return;
+		
+		CommandCategory category = categoryManager.find( categoryName ); 
+		if( category == null ){
+			JOptionPane.showMessageDialog( CommandsListWindow.this , "Selected category doesn't exist");
+			return;
+		}
+		
+		if( categoryManager.remove( category ) ){
+			// aktualizacja drzewa
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) findCategoryNode( category );
+			treeModel.removeNodeFromParent( node );
+			
+			Event event = new CategoryListEvent( this );
+			EventService.getInstance().publish(event);
+		}else
+			JOptionPane.showMessageDialog( CommandsListWindow.this , "This category cannot be deleted" );
 	}
 	
 }
