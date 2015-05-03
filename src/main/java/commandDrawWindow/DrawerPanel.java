@@ -130,9 +130,11 @@ public class DrawerPanel extends JPanel implements Subscriber {
 
             @Override
             public void actionPerformed( ActionEvent e ) {
-                String commandName = commandsList.getSelectedValue().toString();
-                IPlotterCommand command = store.get( commandName );
-                command.execute( new CommandDrawPlotterAdapter( drawer ) );
+            	if(commandsList.getModel().getSize() > 0){
+            		String commandName = commandsList.getSelectedValue().toString();
+                    IPlotterCommand command = store.get( commandName );
+                    command.execute( new CommandDrawPlotterAdapter( drawer ) );
+            	}                
             }
         } );
 
