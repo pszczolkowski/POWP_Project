@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package commandDrawWindow;
+package commandFactoryWindow;
 
 import commandsFactory.CommandBuilder;
 import java.awt.Color;
