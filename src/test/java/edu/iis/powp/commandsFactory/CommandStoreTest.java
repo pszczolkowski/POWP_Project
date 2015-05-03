@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -131,6 +132,15 @@ public class CommandStoreTest {
 		store.rename( "test" , "renamed" );
 		
 		assertThat( store.get( "renamed" ) , is( equalTo( command ) ));
+	}
+	
+	@Test
+	public void addCommand_thenRemoveIt_shouldNotContainThatCommand(){
+		IPlotterCommand command = new CommandBuilder().build();
+		store.add( "test" , command);
+		store.remove( "test" );
+		
+		assertFalse( "store should not contain command" , store.contains( "test" ));
 	}
 
 }

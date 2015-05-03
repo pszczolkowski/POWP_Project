@@ -251,6 +251,7 @@ public class CommandStore implements Serializable {
 		return foundNAmes;
 	}
 	
+	// TODO javadoc
 	public void rename( String currentName , String newName ){
 		if ( contains( currentName ) ){
 			IPlotterCommand command = null;
@@ -265,6 +266,19 @@ public class CommandStore implements Serializable {
 				}
 			}
 		}
+	}
+	
+	// TODO javadoc
+	public IPlotterCommand remove( String name ){
+		if( contains( name ) ){
+			for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
+				if( categoryCommands.containsKey( name ) ){
+					return categoryCommands.remove( name );
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
