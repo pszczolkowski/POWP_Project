@@ -251,6 +251,22 @@ public class CommandStore implements Serializable {
 		return foundNAmes;
 	}
 	
+	public void rename( String currentName , String newName ){
+		if ( contains( currentName ) ){
+			IPlotterCommand command = null;
+			
+			for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
+				command = categoryCommands.get( currentName );
+				
+				if( command != null ){
+					categoryCommands.remove( currentName );
+					categoryCommands.put( newName , command );
+					break;
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Sprawdza czy w magazynie znajduje się polecenie o podanej nazwie. Może
 	 * istnieć tylko jedno polecenie o podanej nazwie.

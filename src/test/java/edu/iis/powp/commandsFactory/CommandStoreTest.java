@@ -123,5 +123,14 @@ public class CommandStoreTest {
 		
 		assertThat( loadedCategories , is( equalTo( addedCategories ) ));
 	}
+	
+	@Test
+	public void addCommand_thenRename_shouldContainsRenamedCommand(){
+		IPlotterCommand command = new CommandBuilder().build();
+		store.add( "test" , command);
+		store.rename( "test" , "renamed" );
+		
+		assertThat( store.get( "renamed" ) , is( equalTo( command ) ));
+	}
 
 }
