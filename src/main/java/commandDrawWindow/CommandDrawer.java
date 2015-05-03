@@ -49,6 +49,8 @@ public class CommandDrawer extends JPanel {
                     public void mousePressed( MouseEvent e ) {
                         if ( !draw || startPoint == null ) {
                             startPoint = new Point( e.getX(), e.getY() );
+                            builder.setPosition( e.getX() - halfOfPanelWidth, e.getY() - halfOfPanelHeigth );
+
                         } else {
                             endPoint = new Point( e.getX(), e.getY() );
                         }
@@ -100,7 +102,7 @@ public class CommandDrawer extends JPanel {
         g.setColor( Color.red );
 
         if ( startPoint != null ) {
-            if ( draw && mouseInWindow ) {
+            if ( draw && mouseInWindow && endPoint != null ) {
                 if ( !preset ) {
                     lines.add( new Line( startPoint, endPoint ) );
                     builder.drawLineTo( endPoint.x - halfOfPanelWidth, endPoint.y - halfOfPanelHeigth );
@@ -115,7 +117,6 @@ public class CommandDrawer extends JPanel {
             } else {
                 endPoint = startPoint;
                 g.drawOval( endPoint.x, endPoint.y, 5, 5 );
-                builder.setPosition( endPoint.x - halfOfPanelWidth, endPoint.y - halfOfPanelHeigth );
                 for ( Line line : lines ) {
                     g.drawLine( line.startPoint.x, line.startPoint.y, line.endPoint.x, line.endPoint.y );
                 }
@@ -136,6 +137,7 @@ public class CommandDrawer extends JPanel {
         lines.clear();
         builder = new CommandBuilder();
         repaint();
+        startPoint = null;
     }
 
     void setPosition( int x, int y ) {
