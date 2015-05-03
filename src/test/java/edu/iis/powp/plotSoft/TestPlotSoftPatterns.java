@@ -95,7 +95,7 @@ public class TestPlotSoftPatterns {
 
     private static void setupCommandFactoryWindow( Context context ) {
         Application.addComponent( CommandFactoryWindow.class );
-        context.addComponentMenu( CommandFactoryWindow.class, "Commands list", 4 );
+        context.addComponentMenu( CommandFactoryWindow.class, "Commands Factory", 4 );
         context.addComponentMenuElement( CommandFactoryWindow.class, "visible", new ActionListener() {
             @Override
             public void actionPerformed( ActionEvent e ) {
