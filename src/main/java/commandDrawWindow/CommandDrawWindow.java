@@ -5,6 +5,7 @@
  */
 package commandDrawWindow;
 
+import java.awt.Dimension;
 import javax.swing.*;
 
 /**
@@ -20,6 +21,7 @@ public class CommandDrawWindow extends JFrame {
         super();
         setTitle( "Command Drawer" );
         setSize( 600, 600 );
+        setMinimumSize( new Dimension( 600, 600 ) );
         setResizable( true );
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 //        EventQueue.invokeLater( new Runnable() {
