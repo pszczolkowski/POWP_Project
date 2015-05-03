@@ -36,6 +36,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 import commandsFactory.CategoryManager;
@@ -49,6 +50,7 @@ import edu.iis.powp.command.IPlotterCommand;
 import eventNotifier.CategoryListEvent;
 import eventNotifier.CommandAddedEvent;
 import eventNotifier.CommandRemovedEvent;
+import eventNotifier.CommandRenamedEvent;
 import eventNotifier.CommandsListEvent;
 import eventNotifier.Event;
 import eventNotifier.EventService;
@@ -72,6 +74,7 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 	private JMenuItem deleteCategoryMenuItem;
 	private JPopupMenu commandPopupMenu;
 	private JMenuItem deleteCommandMenuItem;
+	private JMenuItem renameCommandMenuItem;
 	
 	public CommandsListWindow() {
 		super();
@@ -158,8 +161,11 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		categoryPopupMenu.add( deleteCategoryMenuItem );
 		
 		commandPopupMenu = new JPopupMenu();
+		renameCommandMenuItem = new JMenuItem( "rename" );
+		renameCommandMenuItem.addMouseListener( mouseListener );
 		deleteCommandMenuItem = new JMenuItem( "delete" );
 		deleteCommandMenuItem.addMouseListener( mouseListener );
+		commandPopupMenu.add( renameCommandMenuItem );
 		commandPopupMenu.add( deleteCommandMenuItem );
 		
 		// SEARCH PANEL
@@ -358,6 +364,13 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 				}else{
 					deleteCommand( (String) node.getUserObject() );
 				}
+			}else if( e.getSource() == renameCommandMenuItem ){
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				if( ! node.isLeaf() ){
+					JOptionPane.showMessageDialog( CommandsListWindow.this , "No command selected" );
+				}else{
+					renameCommand( (String) node.getUserObject() );
+				}
 			}
 			
 		}
@@ -381,6 +394,21 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		}
 	}
 	
+	protected void renameCommand(String currentName) {
+		String newName = JOptionPane.showInputDialog( this , "Enter new name:" , "Rename command" , JOptionPane.QUESTION_MESSAGE);
+		if( newName != null ){
+			store.rename( currentName , newName);
+			
+			DefaultMutableTreeNode node = findCommandNode( currentName );
+			treeModel.insertNodeInto( new DefaultMutableTreeNode( newName ) , (MutableTreeNode) node.getParent(), node.getParent().getIndex( node ));
+			treeModel.removeNodeFromParent( node );
+			
+			Event event = new CommandRenamedEvent( this , currentName , newName );
+			EventService.getInstance().publish(event);
+		}
+	}
+
+
 	private void deleteCategory( String categoryName ){
 		CategoryManager categoryManager = store.getCategoryManager();
 		
