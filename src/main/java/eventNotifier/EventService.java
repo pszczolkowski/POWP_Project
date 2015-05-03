@@ -25,21 +25,8 @@ public class EventService {
 	}
 	
 	public void publish( Event event ){
-		Set<Subscriber> subscibers = new HashSet<>();
-		for( Class< ? extends Event > eventType : subscriptions.keySet() ){
-			if( eventType.isInstance( event ) ){
-				subscibers.addAll( subscriptions.get( eventType ) );
-			}
-		}
-		
-		System.out.println( subscibers.size() );
-			
-		for( Subscriber subscriber : subscibers ){
-			if( subscriber == event.getPublisher() )
-				continue;
-				
-			subscriber.inform( event );
-		}
+		Set<Subscriber> subscibers = findSubscribersFor( event );
+		inform(subscibers , event);
 	}
 	
 	public EventService subscribe( Class< ? extends Event > event , Subscriber subscriber ){
@@ -53,6 +40,26 @@ public class EventService {
 		subscibers.add( subscriber );
 		
 		return this;
+	}
+	
+	
+	private Set<Subscriber> findSubscribersFor(Event event) {
+		Set<Subscriber> subscibers = new HashSet<>();
+		for( Class< ? extends Event > eventType : subscriptions.keySet() ){
+			if( eventType.isInstance( event ) ){
+				subscibers.addAll( subscriptions.get( eventType ) );
+			}
+		}
+		return subscibers;
+	}
+	
+	private void inform( Set<Subscriber> subscibers , Event event ) {
+		for( Subscriber subscriber : subscibers ){
+			if( subscriber == event.getPublisher() )
+				continue;
+				
+			subscriber.inform( event );
+		}
 	}
 	
 }
