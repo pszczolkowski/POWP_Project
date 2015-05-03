@@ -1,8 +1,15 @@
 package eventNotifier;
 
-public interface Event {
+public abstract class Event {
 
-	Class< ? extends Event > getType();
-	Object getPublisher();
+	protected Object publisher;
+	
+	protected Event( Object publisher ){
+		this.publisher = publisher;
+	}
+	
+	public Object getPublisher(){
+		return publisher;
+	}
 	
 }

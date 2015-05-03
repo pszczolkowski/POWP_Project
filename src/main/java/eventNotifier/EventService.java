@@ -2,8 +2,10 @@ package eventNotifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class EventService {
 
@@ -23,15 +25,24 @@ public class EventService {
 	}
 	
 	public void publish( Event event ){
-		List<Subscriber> subscibers = subscriptions.get( event.getClass() );
+		Set<Subscriber> subscibers = new HashSet<>();
+		for( Class< ? extends Event > eventType : subscriptions.keySet() ){
+			if( eventType.isInstance( event ) ){
+				subscibers.addAll( subscriptions.get( eventType ) );
+			}
+		}
 		
-		if( subscibers != null ){
-			for( Subscriber subscriber : subscibers )
-				subscriber.inform( event );
+		System.out.println( subscibers.size() );
+			
+		for( Subscriber subscriber : subscibers ){
+			if( subscriber == event.getPublisher() )
+				continue;
+				
+			subscriber.inform( event );
 		}
 	}
 	
-	public void subscribe( Class< ? extends Event > event , Subscriber subscriber ){
+	public EventService subscribe( Class< ? extends Event > event , Subscriber subscriber ){
 		List<Subscriber> subscibers = subscriptions.get( event );
 		
 		if( subscibers == null ){
@@ -40,6 +51,8 @@ public class EventService {
 		}
 		
 		subscibers.add( subscriber );
+		
+		return this;
 	}
 	
 }

@@ -38,18 +38,16 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
-import commandsFactory.CategoryManager;
-import commandsFactory.CommandBuilder;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
+
 import edu.iis.client.plottermagic.IPlotter;
 import edu.iis.powp.app.Application;
 import edu.iis.powp.app.DriverManager;
 import edu.iis.powp.command.IPlotterCommand;
-import edu.iis.powp.command.SetPositionCommand;
-import eventNotifier.CategoryListChangedEvent;
+import eventNotifier.CategoryListEvent;
 import eventNotifier.CommandAddedEvent;
-import eventNotifier.CommandsListChangedEvent;
+import eventNotifier.CommandsListEvent;
 import eventNotifier.Event;
 import eventNotifier.EventService;
 import eventNotifier.Subscriber;
@@ -72,15 +70,8 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 	
 	public CommandsListWindow() {
 		super();
+		
 		store = CommandStore.getInstance();
-		CategoryManager categoryManager = store.getCategoryManager();
-		CommandCategory figures = categoryManager.add( "figures" );
-		IPlotterCommand cmd1 = new CommandBuilder()
-			.setPosition( 200 , 200 )
-			.drawLineTo( 400 , 100 )
-			.build();
-		store.add( "kwadrat" , cmd1 , figures );
-		store.add( "kolo" , new SetPositionCommand(0,0) , figures );
 		
 		EventQueue.invokeLater(new Runnable() {
 			@Override
@@ -89,8 +80,9 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 			}
 		});
 		
-		EventService.getInstance().subscribe( CommandsListChangedEvent.class , this );
-		EventService.getInstance().subscribe( CommandAddedEvent.class , this );
+		EventService.getInstance()
+			.subscribe( CommandsListEvent.class , this )
+			.subscribe( CategoryListEvent.class , this );
 	}
 
 
@@ -269,21 +261,21 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 
 	@Override
 	public void inform(Event event) {
-		if( event.getType() == CommandsListChangedEvent.class ){
-			displayCommandsTree();
-			treeModel.reload();
-			
-			searchCommands();
-			
-			selectedCommandName = null;
-			executeButton.setEnabled( false );
-		}else if( event.getType() == CommandAddedEvent.class ){
+		if( event instanceof CommandAddedEvent ){
 			CommandAddedEvent specificEvent = (CommandAddedEvent) event;
 			CommandCategory category = specificEvent.getCategory();
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode( specificEvent.getCommandName() );
 			
 			DefaultMutableTreeNode node = findCategoryNode(category);
 			treeModel.insertNodeInto( newNode , node, node.getChildCount() );
+			
+			searchCommands();
+			
+			selectedCommandName = null;
+			executeButton.setEnabled( false );
+		}else if( event instanceof CommandsListEvent || event instanceof CategoryListEvent ){
+			displayCommandsTree();
+			treeModel.reload();
 			
 			searchCommands();
 			
@@ -346,7 +338,7 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 			DefaultMutableTreeNode node = findCategoryNode( parentCategory );
 			treeModel.insertNodeInto( newNode , node, node.getChildCount() );
 			
-			Event event = new CategoryListChangedEvent( this );
+			Event event = new CategoryListEvent( this );
 			EventService.getInstance().publish(event);
 		}
 	}

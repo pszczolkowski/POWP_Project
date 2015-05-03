@@ -17,7 +17,7 @@ import edu.iis.powp.command.IPlotterCommand;
 import edu.iis.powp.command.SetPositionCommand;
 import edu.iis.powp.gui.event.predefine.SelectTestFigureOptionListener;
 import edu.kis.powp.drawer.shape.line.BasicLine;
-import eventNotifier.CommandsListChangedEvent;
+import eventNotifier.CommandsListEvent;
 import eventNotifier.Event;
 import eventNotifier.EventService;
 import java.awt.event.ActionEvent;
@@ -92,7 +92,7 @@ public class TestPlotSoftPatterns {
                 if ( fileName != null ) {
                     try {
                         CommandStore.getInstance().importFromFile( fileName );
-                        Event event = new CommandsListChangedEvent( null );
+                        Event event = new CommandsListEvent( null );
                         EventService.getInstance().publish( event );
                     } catch ( FileNotFoundException e1 ) {
                         JOptionPane.showMessageDialog( null, "File doesn't exist", "Error", JOptionPane.ERROR_MESSAGE );
