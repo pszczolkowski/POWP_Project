@@ -1,5 +1,6 @@
 package edu.iis.powp.plotSoft;
 
+import commandFactoryWindow.CommandFactoryWindow;
 import commandsFactory.CommandFactory;
 import commandsFactory.CommandStore;
 import commandsListWindow.CommandsListWindow;
@@ -38,6 +39,8 @@ public class TestPlotSoftPatterns {
 
         setupCommandsListWindow( context );
 
+        setupCommandFactoryWindow( context );
+
         setupDrivers( context );
 
         setupPresetTests( context );
@@ -46,7 +49,6 @@ public class TestPlotSoftPatterns {
 
         loadAllTests( context );
 
-        new commandDrawWindow.CommandDrawWindow();
     }
 
     private static void setupCommandsListWindow( Context context ) {
@@ -89,6 +91,24 @@ public class TestPlotSoftPatterns {
         }, false );
 
         Application.getComponent( CommandsListWindow.class ).setVisible( true );
+    }
+
+    private static void setupCommandFactoryWindow( Context context ) {
+        Application.addComponent( CommandFactoryWindow.class );
+        context.addComponentMenu( CommandFactoryWindow.class, "Commands list", 4 );
+        context.addComponentMenuElement( CommandFactoryWindow.class, "visible", new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                CommandFactoryWindow commandFactoryWindow = Application.getComponent( CommandFactoryWindow.class );
+                if ( commandFactoryWindow.isVisible() ) {
+                    commandFactoryWindow.setVisible( false );
+                } else {
+                    commandFactoryWindow.setVisible( true );
+                }
+            }
+        }, true );
+
+        Application.getComponent( CommandFactoryWindow.class ).setVisible( true );
     }
 
     private static void setupDrivers( Context context ) {

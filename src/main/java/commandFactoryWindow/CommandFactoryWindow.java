@@ -6,36 +6,35 @@
 package commandFactoryWindow;
 
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import javax.swing.*;
 
 /**
  *
  * @author Godzio
  */
-public class CommandDrawWindow extends JFrame {
+public class CommandFactoryWindow extends JFrame {
 
     private DrawerPanel drawingPanel;
     private FormPanel formPanel;
 
-    public CommandDrawWindow() {
+    public CommandFactoryWindow() {
         super();
-        setTitle( "Command Drawer" );
+
+        EventQueue.invokeLater( new Runnable() {
+            @Override
+            public void run() {
+                initUI();
+            }
+        } );
+    }
+
+    private void initUI() {
+        setTitle( "Command Factory" );
         setSize( 600, 600 );
         setMinimumSize( new Dimension( 600, 600 ) );
         setResizable( true );
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-//        EventQueue.invokeLater( new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                initUI();
-//            }
-//        } );
-        initUI();
-        setVisible( true );
-    }
-
-    private void initUI() {
 
         JTabbedPane tabbedMenu = new JTabbedPane();
         drawingPanel = new DrawerPanel();
