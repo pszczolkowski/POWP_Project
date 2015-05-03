@@ -44,8 +44,8 @@ public class DrawerPanel extends JPanel implements Subscriber {
         initUI();
 
         EventService.getInstance()
-        	.subscribe( CategoryListEvent.class, this )
-        	.subscribe( CommandsListEvent.class, this );
+                .subscribe( CategoryListEvent.class, this )
+                .subscribe( CommandsListEvent.class, this );
     }
 
     private void initUI() {
@@ -113,28 +113,32 @@ public class DrawerPanel extends JPanel implements Subscriber {
 
             @Override
             public void actionPerformed( ActionEvent e ) {
-                IPlotterCommand command = drawer.getBuilder().build();
                 String name = commandName.getText();
-                String categoryName = commandCategory.getSelectedItem().toString();
-                CommandCategory category = store.getCategoryManager().find( categoryName );
+                if ( name != null && !name.equals( "" ) ) {
+                    IPlotterCommand command = drawer.getBuilder().build();
 
-                store.add( name, command, category );
-                Event event = new CommandAddedEvent( this, name, category );
-                EventService.getInstance().publish( event );
-                drawer.clear();
-                setPositionButton.doClick();
-                loadAllCommandNames();
+                    String categoryName = commandCategory.getSelectedItem().toString();
+                    CommandCategory category = store.getCategoryManager().find( categoryName );
+
+                    store.add( name, command, category );
+                    Event event = new CommandAddedEvent( this, name, category );
+                    EventService.getInstance().publish( event );
+                    drawer.clear();
+                    commandName.setText( "" );
+                    setPositionButton.doClick();
+                    loadAllCommandNames();
+                }
             }
         } );
         useCommandButton.addActionListener( new ActionListener() {
 
             @Override
             public void actionPerformed( ActionEvent e ) {
-            	if(commandsList.getModel().getSize() > 0 && commandsList.getSelectedIndex()!=-1){
-            		String commandName = commandsList.getSelectedValue().toString();
+                if ( commandsList.getModel().getSize() > 0 && commandsList.getSelectedIndex() != -1 ) {
+                    String commandName = commandsList.getSelectedValue().toString();
                     IPlotterCommand command = store.get( commandName );
                     command.execute( new CommandDrawPlotterAdapter( drawer ) );
-            	}                
+                }
             }
         } );
 
