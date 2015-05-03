@@ -143,4 +143,19 @@ public class CommandCategory implements Serializable {
 		return true;
 	}
 
+	// TODO javadoc
+	boolean remove(CommandCategory category) {
+		for( CommandCategory subCategory : subcategories ){
+			if( subCategory.equals( category ) ){
+				subcategories.remove( category );
+				return true;
+			}
+			
+			if( subCategory.remove( category ) )
+				return true;
+		}
+		
+		return false;
+	}
+
 }

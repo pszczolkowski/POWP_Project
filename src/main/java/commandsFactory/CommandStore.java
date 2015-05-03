@@ -35,7 +35,7 @@ public class CommandStore implements Serializable {
 	private Map< CommandCategory , Map< String , IPlotterCommand > > commands;
 	
 	private CommandStore(){
-		categoryManager = new CategoryManager();
+		categoryManager = new CategoryManager( this );
 		commands = new HashMap<>();
 	}
 
@@ -270,15 +270,24 @@ public class CommandStore implements Serializable {
 	
 	// TODO javadoc
 	public IPlotterCommand remove( String name ){
+		IPlotterCommand removedCommand = null;
+		
 		if( contains( name ) ){
-			for( Map< String , IPlotterCommand > categoryCommands : commands.values() ){
+			for( CommandCategory category : commands.keySet() ){
+				Map< String , IPlotterCommand > categoryCommands = commands.get( category );
+				
 				if( categoryCommands.containsKey( name ) ){
-					return categoryCommands.remove( name );
+					removedCommand = categoryCommands.remove( name );
+					
+					if( categoryCommands.size() == 0 )
+						commands.remove( category );
+					
+					break;
 				}
 			}
 		}
 		
-		return null;
+		return removedCommand;
 	}
 	
 	/**

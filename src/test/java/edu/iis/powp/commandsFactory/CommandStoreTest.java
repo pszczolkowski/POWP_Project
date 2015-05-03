@@ -18,10 +18,10 @@ import org.junit.After;
 import org.junit.Test;
 
 import commandsFactory.CategoryManager;
+import commandsFactory.CategoryNotEmptyException;
 import commandsFactory.CommandBuilder;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
-
 import edu.iis.powp.command.IPlotterCommand;
 
 public class CommandStoreTest {
@@ -141,6 +141,24 @@ public class CommandStoreTest {
 		store.remove( "test" );
 		
 		assertFalse( "store should not contain command" , store.contains( "test" ));
+	}
+	
+	@Test
+	public void addCategory_thenRemoveIt_shouldNotContainThatCategory(){
+		categoryManager.add( "testowa" );
+		
+		assertThat( categoryManager.remove( "testowa" ) , is( notNullValue() ) );
+		assertThat( categoryManager.find( "testowa" ) , is( equalTo( null ) ) );
+	}
+	
+	@Test( expected = CategoryNotEmptyException.class )
+	public void addCategoryWithOneCommand_tryToRemoveThatCategory_expectedException(){
+		IPlotterCommand command = new CommandBuilder().build();
+		CommandCategory category = categoryManager.add( "testowa" );
+		store.add( "test" , command , category);
+		
+		categoryManager.remove( "testowa" );
+		fail( "exception should be thrown" );
 	}
 
 }

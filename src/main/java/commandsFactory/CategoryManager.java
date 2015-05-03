@@ -18,10 +18,12 @@ public class CategoryManager implements Serializable {
 	private static final String ROOT_CATEGORY_NAME = "all";
 	private static final String DEFAULT_CATEGORY_NAME = "general";
 	
+	private CommandStore store;
 	private CommandCategory rootCategory;
 	private CommandCategory defaultCategory;
 	
-	CategoryManager(){
+	CategoryManager( CommandStore store ){
+		this.store = store;
 		rootCategory = new CommandCategory( ROOT_CATEGORY_NAME );
 		defaultCategory = add( DEFAULT_CATEGORY_NAME , null );
 	}
@@ -136,6 +138,29 @@ public class CategoryManager implements Serializable {
 			return true;
 		else
 			return rootCategory.containsSubcategory( category );
+	}
+	
+	// TODO javadoc
+	public CommandCategory remove( String name ){
+		CommandCategory removedCategory = find( name );
+		
+		if( remove( removedCategory ) )
+			return removedCategory;
+		else
+			return null;
+	}
+	
+	// TODO javadoc
+	public boolean remove( CommandCategory category ){
+		if( category == null )
+			return false;
+		if( category == rootCategory || category == defaultCategory )
+			return false;
+		
+		if( store.getCommandsOfCategory( category ).size() > 0 )
+			throw new CategoryNotEmptyException( "category " + category.getName() + " cannot be removed because it contains commands" );
+		
+		return rootCategory.remove( category );
 	}
 	
 	/**
