@@ -70,15 +70,18 @@ public class DrawerPanel extends JPanel implements Subscriber {
         loadAllCommandNames();
         commandsList = new JList( listModel );
         commandListPanel.add( commandsList );
-        JScrollPane scrollPane = new JScrollPane( commandListPanel );
+        JScrollPane scrollPane = new JScrollPane( commandListPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+
+        JPanel lowerPanel = new JPanel( new BorderLayout() );
+        lowerPanel.add( new JLabel( "Commands" ), BorderLayout.NORTH );
+        lowerPanel.add( scrollPane, BorderLayout.CENTER );
+        lowerPanel.add( useCommandButton, BorderLayout.SOUTH );
 
         loadAllCategories();
         JPanel sidePanel = new JPanel();
         sidePanel.setLayout( new BoxLayout( sidePanel, BoxLayout.Y_AXIS ) );
         sidePanel.add( inputs );
-        sidePanel.add( new JLabel( "Commands" ) );
-        sidePanel.add( scrollPane );
-        sidePanel.add( useCommandButton );
+        sidePanel.add( lowerPanel );
 
         setListeners();
 

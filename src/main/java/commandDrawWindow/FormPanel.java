@@ -64,7 +64,9 @@ public class FormPanel extends JPanel implements Subscriber {
 
     private void initUi() {
         setLayout( new BorderLayout() );
-        JPanel upperSide = new JPanel( new GridLayout( 5, 1, 0, 10 ) );
+        JPanel upperSide = new JPanel( new GridLayout( 2, 1, 0, 10 ) );
+        JPanel lowerSide = new JPanel( new BorderLayout( 20, 0 ) );
+        JPanel controls = new JPanel( new GridLayout( 8, 1, 0, 10 ) );
 
         JPanel firstRow = new JPanel( new GridLayout( 1, 4, 5, 0 ) );
         firstRow.add( commandTypeLabel );
@@ -90,18 +92,28 @@ public class FormPanel extends JPanel implements Subscriber {
 
         upperSide.add( firstRow );
         upperSide.add( secondRow );
-        upperSide.add( thirdRow );
-        upperSide.add( fourthRow );
-        upperSide.add( fifthRow );
+        controls.add( thirdRow );
+        controls.add( fourthRow );
+        controls.add( fifthRow );
+        controls.add( new JPanel() );
+        controls.add( new JPanel() );
+        controls.add( new JPanel() );
+        controls.add( new JPanel() );
+        controls.add( new JPanel() );
 
         JPanel commandListPanel = new JPanel( new GridLayout( 1, 1 ) );
         JList commandList = new JList( commandListModel );
+        DefaultListCellRenderer renderer = (DefaultListCellRenderer) commandList.getCellRenderer();
+        renderer.setHorizontalAlignment( JLabel.CENTER );
         commandList.setEnabled( false );
         commandListPanel.add( commandList );
         JScrollPane scrollPanel = new JScrollPane( commandListPanel );
 
+        lowerSide.add( controls, BorderLayout.WEST );
+        lowerSide.add( scrollPanel, BorderLayout.CENTER );
+
         add( upperSide, BorderLayout.NORTH );
-        add( scrollPanel, BorderLayout.CENTER );
+        add( lowerSide, BorderLayout.CENTER );
 
         loadAllCategories();
         loadAllCommandNames();
