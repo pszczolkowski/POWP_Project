@@ -140,7 +140,19 @@ public class CategoryManager implements Serializable {
 			return rootCategory.containsSubcategory( category );
 	}
 	
-	// TODO javadoc
+	/**
+	 * Usuwa kategorię o podanej nazwie, niezależnie od poziomu zagnieżdżenia na
+	 * jakim się znajduje. Zwraca usuniętą kategorię lub null, jeżeli kategoria
+	 * o podanej nazwie nie istnieje. Nie można usunąć kategorii, które
+	 * zawierają jakieś polecenia.
+	 * 
+	 * @param name
+	 *            nazwa kategorii do usunięcia
+	 * @return usunięta kategoria lub null, jeżeli kategoria o podanej nazwie
+	 *         nie istnieje
+	 * @throws CategoryNotEmptyException
+	 *             jeżeli kategoria o podanej nazwie zawiera polecenia
+	 */
 	public CommandCategory remove( String name ){
 		CommandCategory removedCategory = find( name );
 		
@@ -150,7 +162,17 @@ public class CategoryManager implements Serializable {
 			return null;
 	}
 	
-	// TODO javadoc
+	/**
+	 * Usuwa podaną kategorię. Nie można usunąć kategorii, które zawierają
+	 * jakieś polecenia, a także kategorii korzenia i kategorii domyślnej.
+	 * 
+	 * @param category
+	 *            kategoria do usunięcia
+	 * @return true jeżeli kategoria została usunięta, false jeżeli taka
+	 *         kategoria nie istnieje
+	 * @throws CategoryNotEmptyException
+	 *             jeżeli podana kategoria zawiera polecenia
+	 */
 	public boolean remove( CommandCategory category ){
 		if( category == null )
 			return false;

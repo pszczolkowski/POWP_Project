@@ -251,7 +251,15 @@ public class CommandStore implements Serializable {
 		return foundNAmes;
 	}
 	
-	// TODO javadoc
+	/**
+	 * Zmienia nazwę polecenia. Jeżeli polecenie o podanej nazwie nei istnieje,
+	 * nie zachodzą żadne zmiany.
+	 * 
+	 * @param currentName
+	 *            obecna nazwa polecenia do zmiany
+	 * @param newName
+	 *            nowa nazwa polecenia
+	 */
 	public void rename( String currentName , String newName ){
 		if ( contains( currentName ) ){
 			IPlotterCommand command = null;
@@ -268,7 +276,15 @@ public class CommandStore implements Serializable {
 		}
 	}
 	
-	// TODO javadoc
+	/**
+	 * Usuwa polecenie o podanej nazwie. Zwraca usunięte polecenie lub null,
+	 * jeżeli polecenie o podanej nazwie nie istnieje.
+	 * 
+	 * @param name
+	 *            nazwa polecenia do usunięcia
+	 * @return usunięte polecenie lub null, jeżeli polecenie o podanej nazwie
+	 *         nie istnieje
+	 */
 	public IPlotterCommand remove( String name ){
 		IPlotterCommand removedCommand = null;
 		

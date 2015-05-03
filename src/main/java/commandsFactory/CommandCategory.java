@@ -143,7 +143,16 @@ public class CommandCategory implements Serializable {
 		return true;
 	}
 
-	// TODO javadoc
+	/**
+	 * Usuwa podaną podkategorię niezależnie od poziomu zagnieżdżenia na jakim
+	 * się znajduje. Należy używać tej metody jedynie wtedy, kiedy podana
+	 * podkategoria nie zawiera żadnych poleceń.
+	 * 
+	 * @param category
+	 *            podkategoria do usunięcia
+	 * @return true jeżeli podana kategoria została usunięta, false jeżeli taka
+	 *         kategoria nie istnieje
+	 */
 	boolean remove(CommandCategory category) {
 		for( CommandCategory subCategory : subcategories ){
 			if( subCategory.equals( category ) ){
