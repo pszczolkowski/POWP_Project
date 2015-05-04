@@ -4,7 +4,7 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+*.jar 
 *.war
 *.ear
 
@@ -22,3 +22,4 @@ doc_commandFactory/
 #plik zawierający zapisane na dysku polecenia
 commands
 prezentacja/~$prezentacja.pptx
+!lib/
