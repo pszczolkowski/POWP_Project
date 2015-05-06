@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.*;
 
@@ -149,6 +150,7 @@ public class DrawerPanel extends JPanel implements Subscriber {
 
     private void loadAllCommandNames() {
         List<String> commands = store.getCommandsNames();
+        Collections.sort( commands );
         listModel.clear();
         for ( String command : commands ) {
             listModel.addElement( command );

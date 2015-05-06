@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.*;
 
@@ -170,6 +171,7 @@ public class FormPanel extends JPanel implements Subscriber {
             public void actionPerformed( ActionEvent e ) {
                 commandNameChooser.setText( "" );
                 commandListModel.clear();
+                builder = new CommandBuilder();
             }
         } );
 
@@ -197,6 +199,7 @@ public class FormPanel extends JPanel implements Subscriber {
         commandTypePicker.addItem( "Set Position" );
         commandTypePicker.addItem( "Draw line" );
         List<String> commands = store.getCommandsNames();
+        Collections.sort( commands );
         for ( String command : commands ) {
             commandTypePicker.addItem( command );
         }
