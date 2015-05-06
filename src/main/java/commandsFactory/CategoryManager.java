@@ -86,7 +86,7 @@ public class CategoryManager implements Serializable {
 	 *         istnieje
 	 */
 	public CommandCategory find( String categoryName ){
-		if( rootCategory.getName() == categoryName )
+		if( rootCategory.getName().equals( categoryName ) )
 			return rootCategory;
 		else
 			return rootCategory.findSubcategory( categoryName );
