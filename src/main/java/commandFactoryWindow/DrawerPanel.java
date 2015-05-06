@@ -5,6 +5,7 @@
  */
 package commandFactoryWindow;
 
+import commandsFactory.CommandAlreadyExistsException;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
 import edu.iis.powp.command.IPlotterCommand;
@@ -119,18 +120,22 @@ public class DrawerPanel extends JPanel implements Subscriber {
             public void actionPerformed( ActionEvent e ) {
                 String name = commandName.getText();
                 if ( name != null && !name.equals( "" ) ) {
-                    IPlotterCommand command = drawer.getBuilder().build();
+                    try {
+                        IPlotterCommand command = drawer.getBuilder().build();
 
-                    String categoryName = commandCategory.getSelectedItem().toString();
-                    CommandCategory category = store.getCategoryManager().find( categoryName );
+                        String categoryName = commandCategory.getSelectedItem().toString();
+                        CommandCategory category = store.getCategoryManager().find( categoryName );
 
-                    store.add( name, command, category );
-                    Event event = new CommandAddedEvent( this, name, category );
-                    EventService.getInstance().publish( event );
-                    drawer.clear();
-                    commandName.setText( "" );
-                    setPositionButton.doClick();
-                    loadAllCommandNames();
+                        store.add( name, command, category );
+                        Event event = new CommandAddedEvent( this, name, category );
+                        EventService.getInstance().publish( event );
+                        drawer.clear();
+                        commandName.setText( "" );
+                        setPositionButton.doClick();
+                        loadAllCommandNames();
+                    } catch ( CommandAlreadyExistsException exception ) {
+                        JOptionPane.showMessageDialog( DrawerPanel.this, "Command with that name already exists" );
+                    }
                 }
             }
         } );

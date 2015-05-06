@@ -5,6 +5,7 @@
  */
 package commandFactoryWindow;
 
+import commandsFactory.CommandAlreadyExistsException;
 import commandsFactory.CommandBuilder;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
@@ -151,46 +152,57 @@ public class FormPanel extends JPanel implements Subscriber {
             public void actionPerformed( ActionEvent e ) {
                 String commandName = commandNameChooser.getText();
                 if ( commandName != null && !commandName.equals( "" ) ) {
-                    String categoryName = commandCategoryPicker.getSelectedItem().toString();
-                    CommandCategory category = store.getCategoryManager().find( categoryName );
-                    IPlotterCommand command = builder.build();
+                    try {
+                        String categoryName = commandCategoryPicker.getSelectedItem().toString();
+                        CommandCategory category = store.getCategoryManager().find( categoryName );
+                        IPlotterCommand command = builder.build();
 
-                    store.add( commandName, command, category );
-                    Event event = new CommandAddedEvent( this, commandName, category );
-                    EventService.getInstance().publish( event );
-                    resetButton.doClick();
-                    builder = new CommandBuilder();
-                }
-
-            }
-        } );
-
-        resetButton.addActionListener( new ActionListener() {
-
-            @Override
-            public void actionPerformed( ActionEvent e ) {
-                commandNameChooser.setText( "" );
-                commandListModel.clear();
-                builder = new CommandBuilder();
-            }
-        } );
-
-        commandTypePicker.addItemListener( new ItemListener() {
-
-            @Override
-            public void itemStateChanged( ItemEvent e ) {
-                if ( commandTypePicker.getSelectedItem() != null ) {
-                    String commandType = commandTypePicker.getSelectedItem().toString();
-                    if ( commandType.equals( "Set Position" ) || commandType.equals( "Draw line" ) ) {
-                        xPositionSpinner.setEnabled( true );
-                        yPositionSpinner.setEnabled( true );
-                    } else {
-                        xPositionSpinner.setEnabled( false );
-                        yPositionSpinner.setEnabled( false );
+                        store.add( commandName, command, category );
+                        Event event = new CommandAddedEvent( this, commandName, category );
+                        EventService.getInstance().publish( event );
+                        resetButton.doClick();
+                        builder = new CommandBuilder();
+                    } catch ( CommandAlreadyExistsException exception ) {
+                        JOptionPane.showMessageDialog( FormPanel.this, "Command with that name already exists" );
                     }
                 }
+
             }
-        } );
+        }
+        );
+
+        resetButton.addActionListener(
+                new ActionListener() {
+
+                    @Override
+                    public void actionPerformed( ActionEvent e
+                    ) {
+                        commandNameChooser.setText( "" );
+                        commandListModel.clear();
+                        builder = new CommandBuilder();
+                    }
+                }
+        );
+
+        commandTypePicker.addItemListener(
+                new ItemListener() {
+
+                    @Override
+                    public void itemStateChanged( ItemEvent e
+                    ) {
+                        if ( commandTypePicker.getSelectedItem() != null ) {
+                            String commandType = commandTypePicker.getSelectedItem().toString();
+                            if ( commandType.equals( "Set Position" ) || commandType.equals( "Draw line" ) ) {
+                                xPositionSpinner.setEnabled( true );
+                                yPositionSpinner.setEnabled( true );
+                            } else {
+                                xPositionSpinner.setEnabled( false );
+                                yPositionSpinner.setEnabled( false );
+                            }
+                        }
+                    }
+                }
+        );
 
     }
 
