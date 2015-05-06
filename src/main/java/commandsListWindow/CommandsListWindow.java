@@ -8,7 +8,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -41,8 +43,10 @@ import javax.swing.tree.TreeSelectionModel;
 
 import commandsFactory.CategoryManager;
 import commandsFactory.CategoryNotEmptyException;
+import commandsFactory.CommandBuilder;
 import commandsFactory.CommandCategory;
 import commandsFactory.CommandStore;
+
 import edu.iis.client.plottermagic.IPlotter;
 import edu.iis.powp.app.Application;
 import edu.iis.powp.app.DriverManager;
@@ -130,7 +134,7 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 		
 		setTitle( "Commands" );
 		setSize( new Dimension( 210 , 400 ) );
-		setMinimumSize( new Dimension( 210 , 300 ) );
+		setMinimumSize( new Dimension( 240 , 300 ) );
 		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );		
 		setResizable( true );
 		
@@ -274,6 +278,8 @@ public class CommandsListWindow extends JFrame implements TreeSelectionListener,
 			foundCommands = new ArrayList<String>();
 		else		
 			foundCommands = store.getCommandsNamesLike( searchName );
+		
+		Collections.sort( foundCommands );
 		
 		searchResultsList.setListData( foundCommands.toArray(new String[]{}) );
 	}
