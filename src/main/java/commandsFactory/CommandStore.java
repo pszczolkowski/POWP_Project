@@ -104,7 +104,11 @@ public class CommandStore implements Serializable {
 			commands.put( category , categoryCommands);
 		}
 		
-		categoryCommands.put( name , command );
+            try {
+                categoryCommands.put( name , command.clone() );
+            } catch ( CloneNotSupportedException ex ) {
+                
+            }
 	}
 
 	/**
